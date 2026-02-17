@@ -44,6 +44,8 @@ export type StationEventSummary = {
 // 修改备注: 单站点最近事件（side-panel 使用）
 export type StationRecentEvent = {
   id: number;
+  station_id?: string | null;
+  basin_name?: string | null;
   start_time: string | null;
   peak_time: string | null;
   end_time: string | null;
@@ -69,6 +71,7 @@ export type StationEventsApiResponse = {
   summary: StationEventSummary;
   recentEvents: StationRecentEvent[];
   matchedSeries?: StationMatchedPoint[];
+  matchedEventsDetail?: StationRecentEvent[];
 };
 
 // 修改备注: 时间段筛选时的轻量计数响应

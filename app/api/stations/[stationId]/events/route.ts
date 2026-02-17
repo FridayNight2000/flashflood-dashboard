@@ -39,6 +39,20 @@ type StationMatchedPointRow = {
   peak_time_str: string | null;
 };
 
+type StationMatchedEventRow = {
+  id: number;
+  station_id: string;
+  start_time: string | null;
+  peak_time: string | null;
+  end_time: string | null;
+  start_value: number | null;
+  peak_value: number | null;
+  end_value: number | null;
+  rise_time: number | null;
+  fall_time: number | null;
+  peak_time_str: string | null;
+};
+
 function parseLimit(value: string | null): number {
   if (!value) {
     return 20;
@@ -200,6 +214,82 @@ const recentEventsStmt = db.prepare(`
   LIMIT ?
 `);
 
+const matchedEventsAllStmt = db.prepare(`
+  SELECT
+    id,
+    station_id,
+    start_time,
+    peak_time,
+    end_time,
+    start_value,
+    peak_value,
+    end_value,
+    rise_time,
+    fall_time,
+    peak_time_str
+  FROM station_records
+  WHERE station_id = ?
+  ORDER BY peak_time ASC
+`);
+
+const matchedEventsBetweenStmt = db.prepare(`
+  SELECT
+    id,
+    station_id,
+    start_time,
+    peak_time,
+    end_time,
+    start_value,
+    peak_value,
+    end_value,
+    rise_time,
+    fall_time,
+    peak_time_str
+  FROM station_records
+  WHERE station_id = ?
+    AND peak_time >= ?
+    AND peak_time <= ?
+  ORDER BY peak_time ASC
+`);
+
+const matchedEventsFromStmt = db.prepare(`
+  SELECT
+    id,
+    station_id,
+    start_time,
+    peak_time,
+    end_time,
+    start_value,
+    peak_value,
+    end_value,
+    rise_time,
+    fall_time,
+    peak_time_str
+  FROM station_records
+  WHERE station_id = ?
+    AND peak_time >= ?
+  ORDER BY peak_time ASC
+`);
+
+const matchedEventsToStmt = db.prepare(`
+  SELECT
+    id,
+    station_id,
+    start_time,
+    peak_time,
+    end_time,
+    start_value,
+    peak_value,
+    end_value,
+    rise_time,
+    fall_time,
+    peak_time_str
+  FROM station_records
+  WHERE station_id = ?
+    AND peak_time <= ?
+  ORDER BY peak_time ASC
+`);
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ stationId: string }> | { stationId: string } },
@@ -219,6 +309,10 @@ export async function GET(
     );
     const includeMatchedSeries = parseBoolean(
       req.nextUrl.searchParams.get("includeMatchedSeries"),
+      false,
+    );
+    const includeMatchedEvents = parseBoolean(
+      req.nextUrl.searchParams.get("includeMatchedEvents"),
       false,
     );
     const countOnly = parseBoolean(req.nextUrl.searchParams.get("countOnly"), false);
@@ -297,6 +391,31 @@ export async function GET(
       }
     }
 
+    let matchedEventsDetail: StationMatchedEventRow[] | undefined;
+    if (includeMatchedEvents) {
+      if (startTs && endTs) {
+        matchedEventsDetail = matchedEventsBetweenStmt.all(
+          cleanStationId,
+          startTs,
+          endTs,
+        ) as StationMatchedEventRow[];
+      } else if (startTs) {
+        matchedEventsDetail = matchedEventsFromStmt.all(
+          cleanStationId,
+          startTs,
+        ) as StationMatchedEventRow[];
+      } else if (endTs) {
+        matchedEventsDetail = matchedEventsToStmt.all(
+          cleanStationId,
+          endTs,
+        ) as StationMatchedEventRow[];
+      } else {
+        matchedEventsDetail = matchedEventsAllStmt.all(
+          cleanStationId,
+        ) as StationMatchedEventRow[];
+      }
+    }
+
     return NextResponse.json({
       stationId: cleanStationId,
       summary: {
@@ -313,6 +432,7 @@ export async function GET(
       },
       recentEvents,
       matchedSeries,
+      matchedEventsDetail,
     });
   } catch (error) {
     return NextResponse.json(

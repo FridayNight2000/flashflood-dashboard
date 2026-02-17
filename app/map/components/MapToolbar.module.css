@@ -22,6 +22,10 @@
   background-clip: padding-box;
 }
 
+.mapInputMuted {
+  color: #6b7280;
+}
+
 .mapInput:focus {
   border-color: #6c757d;
 }

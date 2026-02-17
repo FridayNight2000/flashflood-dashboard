@@ -26,6 +26,21 @@ type StationMatchedPointRow = {
   peak_time_str: string | null;
 };
 
+type StationMatchedEventRow = {
+  id: number;
+  station_id: string;
+  basin_name: string;
+  start_time: string | null;
+  peak_time: string | null;
+  end_time: string | null;
+  start_value: number | null;
+  peak_value: number | null;
+  end_value: number | null;
+  rise_time: number | null;
+  fall_time: number | null;
+  peak_time_str: string | null;
+};
+
 function parseBoolean(value: string | null, fallback: boolean): boolean {
   if (value === null) {
     return fallback;
@@ -165,6 +180,90 @@ const matchedSeriesToStmt = db.prepare(`
   ORDER BY sr.peak_time ASC
 `);
 
+const matchedEventsAllStmt = db.prepare(`
+  SELECT
+    sr.id,
+    sr.station_id,
+    s.basin_name,
+    sr.start_time,
+    sr.peak_time,
+    sr.end_time,
+    sr.start_value,
+    sr.peak_value,
+    sr.end_value,
+    sr.rise_time,
+    sr.fall_time,
+    sr.peak_time_str
+  FROM station_records sr
+  JOIN stations s ON sr.station_id = s.station_id
+  WHERE s.basin_name = ?
+  ORDER BY sr.peak_time ASC
+`);
+
+const matchedEventsBetweenStmt = db.prepare(`
+  SELECT
+    sr.id,
+    sr.station_id,
+    s.basin_name,
+    sr.start_time,
+    sr.peak_time,
+    sr.end_time,
+    sr.start_value,
+    sr.peak_value,
+    sr.end_value,
+    sr.rise_time,
+    sr.fall_time,
+    sr.peak_time_str
+  FROM station_records sr
+  JOIN stations s ON sr.station_id = s.station_id
+  WHERE s.basin_name = ?
+    AND sr.peak_time >= ?
+    AND sr.peak_time <= ?
+  ORDER BY sr.peak_time ASC
+`);
+
+const matchedEventsFromStmt = db.prepare(`
+  SELECT
+    sr.id,
+    sr.station_id,
+    s.basin_name,
+    sr.start_time,
+    sr.peak_time,
+    sr.end_time,
+    sr.start_value,
+    sr.peak_value,
+    sr.end_value,
+    sr.rise_time,
+    sr.fall_time,
+    sr.peak_time_str
+  FROM station_records sr
+  JOIN stations s ON sr.station_id = s.station_id
+  WHERE s.basin_name = ?
+    AND sr.peak_time >= ?
+  ORDER BY sr.peak_time ASC
+`);
+
+const matchedEventsToStmt = db.prepare(`
+  SELECT
+    sr.id,
+    sr.station_id,
+    s.basin_name,
+    sr.start_time,
+    sr.peak_time,
+    sr.end_time,
+    sr.start_value,
+    sr.peak_value,
+    sr.end_value,
+    sr.rise_time,
+    sr.fall_time,
+    sr.peak_time_str
+  FROM station_records sr
+  JOIN stations s ON sr.station_id = s.station_id
+  WHERE s.basin_name = ?
+    AND sr.peak_time <= ?
+  ORDER BY sr.peak_time ASC
+`);
+
 // Note: Recent events are not as meaningful across a whole basin without extensive filtering,
 // but we can expose top events by peak value or time if needed.
 // For now, we omit recentEvents for basin view unless specifically requested.
@@ -186,6 +285,10 @@ export async function GET(
 
     const includeMatchedSeries = parseBoolean(
       req.nextUrl.searchParams.get("includeMatchedSeries"),
+      false,
+    );
+    const includeMatchedEvents = parseBoolean(
+      req.nextUrl.searchParams.get("includeMatchedEvents"),
       false,
     );
     const countOnly = parseBoolean(
@@ -266,6 +369,31 @@ export async function GET(
       }
     }
 
+    let matchedEventsDetail: StationMatchedEventRow[] | undefined;
+    if (includeMatchedEvents) {
+      if (startTs && endTs) {
+        matchedEventsDetail = matchedEventsBetweenStmt.all(
+          cleanBasin,
+          startTs,
+          endTs,
+        ) as StationMatchedEventRow[];
+      } else if (startTs) {
+        matchedEventsDetail = matchedEventsFromStmt.all(
+          cleanBasin,
+          startTs,
+        ) as StationMatchedEventRow[];
+      } else if (endTs) {
+        matchedEventsDetail = matchedEventsToStmt.all(
+          cleanBasin,
+          endTs,
+        ) as StationMatchedEventRow[];
+      } else {
+        matchedEventsDetail = matchedEventsAllStmt.all(
+          cleanBasin,
+        ) as StationMatchedEventRow[];
+      }
+    }
+
     return NextResponse.json({
       basinName: cleanBasin,
       summary: {
@@ -282,6 +410,7 @@ export async function GET(
       },
       recentEvents: [], // Empty for now as discussed
       matchedSeries,
+      matchedEventsDetail,
     });
   } catch (error) {
     return NextResponse.json(

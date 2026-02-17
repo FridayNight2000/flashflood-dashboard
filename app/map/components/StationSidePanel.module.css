@@ -3,7 +3,7 @@
   top: 1rem;
   right: 1rem;
   z-index: 1000;
-  width: min(380px, calc(100vw - 2rem));
+  width: min(435px, calc(100vw - 2rem));
   max-height: calc(100% - 2rem);
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid #d5dbe3;
@@ -22,38 +22,116 @@
 }
 
 .stationSidePanelHeader {
+  padding: 0.5rem 0.6rem 0;
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+}
+
+.tabStrip {
+  position: relative;
+  /* border-bottom: 1px solid #d0d9e4; */
+}
+
+.tabList {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.22rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-snap-type: x proximity;
+  padding: 0 0.15rem;
+  scrollbar-width: none;
+}
+
+.tabList::-webkit-scrollbar {
+  display: none;
+}
+
+.browserTab {
+  position: relative;
+  flex: 0 0 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  max-width: min(270px, 58vw);
+  border-radius: 12px 12px 0 0;
+  transform: translateY(1px);
+  z-index: 1;
+  scroll-snap-align: start;
+}
+
+.browserTabActive {
+  z-index: 3;
+  transform: translateY(0);
+  border-color: #8ea6bc;
+  border-bottom-color: transparent;
+  background: #ffffff;
+  box-shadow: 0 1px 0 #ffffff;
+}
+
+.browserTabActive::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: -1px;
+  height: 2px;
+  background: #ffffff;
+}
+
+.browserTabLabel {
+  border: 0;
+  background: transparent;
+  color: #0f172a;
+  padding: 0.42rem 0.4rem 0.42rem 0.66rem;
+  font-size: 0.84rem;
+  line-height: 1.2;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.browserTabCloseSlot {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f8fafc;
+  padding-right: 0.22rem;
 }
 
-.stationSidePanelHeader h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.stationSideCloseBtn {
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  background: #fff;
-  padding: 0.35rem 0.7rem;
+.browserTabClose {
+  border: 0;
+  background: transparent;
+  color: #334155;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 8px;
+  line-height: 1;
+  font-size: 0.96rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.browserTabClose:hover {
+  background: #dde7f1;
+}
+
+.browserTabClose:focus-visible,
+.browserTabLabel:focus-visible {
+  outline: 2px solid #7fb1d1;
+  outline-offset: 1px;
 }
 
 .stationSidePanelBody {
   padding: 0.85rem 1rem;
-  overflow: auto;
-  max-height: calc(100% - 56px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: calc(100% - 60px);
 }
 
 .contentSplit {
@@ -74,47 +152,128 @@
   font-size: 0.95rem;
 }
 
+.basinInlineLink {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.basinInlineLink:hover {
+  color: #1e40af;
+}
+
+.basinInlineLink:focus-visible {
+  outline: 2px solid #7fb1d1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .stationSideDivider {
   border: 0;
   border-top: 1px solid #e5e7eb;
   margin: 0.8rem 0;
 }
 
-.timelineHeader {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  background: #f8fafc;
-  padding: 0.5rem 0.65rem;
-  font-size: 0.84rem;
-  cursor: pointer;
-}
-
 .chartCard {
-  margin-top: 0.55rem;
-  border: 1px solid #d1d5db;
+  /* position: relative; */
   border-radius: 10px;
   background: #ffffff;
   padding: 0.55rem;
 }
 
-.chartCanvas {
-  width: 100%;
-  height: 260px;
+.presetSection {
+  margin-top: 0.7rem;
 }
 
-.downloadBtn {
-  margin-top: 0.55rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 9px;
+
+.presetList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  overflow: hidden;
+}
+
+.presetOption {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
   background: #f8fafc;
-  padding: 0.35rem 0.7rem;
-  font-size: 0.82rem;
+  padding: 0.42rem 0.7rem;
+  text-align: center;
   cursor: pointer;
+  overflow: hidden;
+}
+
+.presetOptionActive {
+  border-color: #8ea6bc;
+  background: #eff6ff;
+}
+
+.presetOptionLabel {
+  display: block;
+  max-width: 100%;
+  font-size: 0.84rem;
+  color: #0f172a;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chartCanvas {
+  width: 100%;
+  max-width: 760px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.chartDownloadTrigger {
+  position: relative;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+
+.chartDownloadTrigger::after {
+  content: "Click chart to download PNG";
+  position: absolute;
+  top: -2rem;
+  right: 1rem;
+  background: rgba(15, 23, 42, 0.84);
+  color: #f8fafc;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.32rem 0.48rem;
+  border-radius: 999px;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+  pointer-events: none;
+}
+
+.chartDownloadTrigger:hover::after,
+.chartDownloadTrigger:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chartDownloadTrigger:focus-visible {
+  outline: 2px solid #7fb1d1;
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .sidePanelDateRow {
@@ -131,11 +290,88 @@
   font-size: 0.82rem;
 }
 
+.filteredEventsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.6rem 0;
+}
+
+.filteredEventsLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.inlineDownloadBtn {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 0.12rem 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.inlineDownloadBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.metricsCard {
+  position: relative;
+  margin-top: 0.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.6rem;
+}
+
+.metricsCopyBtn {
+  position: absolute;
+  top: 0.38rem;
+  right: 0.38rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 0.6rem;
+  padding-top: 0.15rem;
+}
+
+.metricsItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.metricsItem strong {
+  font-size: 0.8rem;
+  color: #334155;
+  line-height: 1.2;
+}
+
+.metricsItem span {
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
 .stationSidePanelEmpty {
   padding: 1rem;
   color: #475569;
   font-size: 0.95rem;
 }
+
 
 @media (max-width: 900px) {
   .stationSidePanel {
@@ -150,28 +386,50 @@
   .panelExpanded {
     width: auto;
   }
+
+  .panelExpanded .chartCanvas {
+    height: 280px;
+  }
+
+  .browserTab {
+    max-width: min(230px, 64vw);
+  }
+
+  .browserTabLabel {
+    padding-left: 0.56rem;
+    font-size: 0.82rem;
+  }
 }
 
 @media (min-width: 901px) {
   .panelExpanded .contentSplit {
     display: grid;
-    grid-template-columns: minmax(300px, 38%) 1fr;
+    grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
     gap: 12px;
+    align-items: stretch;
   }
 
   .panelExpanded .infoColumn {
-    max-height: calc(100% - 6px);
-    overflow: auto;
+    min-width: 0;
+    max-height: none;
+    overflow: visible;
     padding-right: 2px;
   }
 
   .panelExpanded .chartColumn {
+    min-width: 0;
     margin-top: 0;
+    display: flex;
+    align-items: center;
   }
-}
 
-.placeholderText {
-  color: #64748b;
-  font-style: italic;
-  font-size: 0.9rem;
+  .panelExpanded .chartCard {
+    height: 80%;
+    /* padding: 1rem; */
+    min-height: 0;
+    width: 100%;
+  }
+  .panelExpanded .chartCanvas {
+    height: 100%;
+  }
 }

@@ -7,6 +7,7 @@ import { latLngBounds } from "leaflet";
 import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
 import type { Station, StationsApiResponse } from "../types/index";
 import MapToolbar from "./components/MapToolbar";
+import type { SearchSuggestion, SelectedSearchItem } from "./components/MapToolbar";
 import StationSidePanel from "./components/StationSidePanel";
 import StationMarkers from "./components/StationMarkers";
 import { MapInstanceWatcher, ZoomWatcher } from "./components/MapEventWatchers";
@@ -24,6 +25,7 @@ const japanBounds: [[number, number], [number, number]] = [
 ];
 
 export default function LeafletMap() {
+  const noMatchHint = "未匹配到结果，请尝试更完整的名称";
   //开始ui状态
   const [stations, setStations] = useState<Station[]>([]); // station-info data的接收
   const [isLoading, setIsLoading] = useState(true);
@@ -32,11 +34,13 @@ export default function LeafletMap() {
 
   const [error, setError] = useState<string | null>(null);
 
-  // 修改备注: 记录被点击的站点，用于右侧信息面板展示
-  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
-  // 修改备注: 记录被选中的 Basin 名称及其站点数量
-  const [selectedBasin, setSelectedBasin] = useState<string | null>(null);
-  const [basinStationCount, setBasinStationCount] = useState<number>(0);
+  // 修改备注: 侧边栏 tab 状态（Basin + 单实例 Station）
+  const [basinTab, setBasinTab] = useState<{
+    basinName: string;
+    stationCount: number;
+  } | null>(null);
+  const [stationTab, setStationTab] = useState<Station | null>(null);
+  const [activeTab, setActiveTab] = useState<"basin" | "station" | null>(null);
 
   // 修改备注: 保存地图实例，用于搜索后自动跳转
   const [mapInstance, setMapInstance] = useState<LeafletMapInstance | null>(
@@ -45,10 +49,13 @@ export default function LeafletMap() {
   // 修改备注: 搜索输入与提示文案
   const [searchText, setSearchText] = useState("");
   const [searchHint, setSearchHint] = useState<string>("");
-  // 修改备注: 记录搜索命中的站点ID，用于地图高亮显示
-  const [highlightedStationIds, setHighlightedStationIds] = useState<string[]>(
-    [],
+  const [selectedSearchItem, setSelectedSearchItem] =
+    useState<SelectedSearchItem | null>(null);
+  // 修改备注: 地图双层状态。selected 控制持久侧边栏/主高亮，preview 控制临时弹窗/次高亮
+  const [selectedStationId, setSelectedStationId] = useState<string | null>(
+    null,
   );
+  const [previewStationId, setPreviewStationId] = useState<string | null>(null);
 
   //REVIEW - 1. station info  data fetching
   useEffect(() => {
@@ -65,9 +72,12 @@ export default function LeafletMap() {
         const merged: Station[] = [];
 
         while (page <= totalPages) {
-          const res = await fetch(`/api/stations?page=${page}&pageSize=1000`, {
-            signal: controller.signal,
-          });
+          const res = await fetch(
+            `/api/stations?page=${page}&pageSize=1000&hasData=1`,
+            {
+              signal: controller.signal,
+            },
+          );
 
           if (!res.ok) {
             throw new Error(`Request failed with status ${res.status}`);
@@ -153,15 +163,47 @@ export default function LeafletMap() {
     () => [
       ...basinSuggestions.map((value) => ({
         value,
-        type: "basin name" as const,
+        type: "Basin" as const,
       })),
       ...stationNameSuggestions.map((value) => ({
         value,
-        type: "station name" as const,
+        type: "Station" as const,
       })),
     ],
     [basinSuggestions, stationNameSuggestions],
   );
+
+  useEffect(() => {
+    const keyword = searchText.trim();
+    if (!keyword) {
+      setSearchHint((prev) => (prev === noMatchHint ? "" : prev));
+      return;
+    }
+
+    if (searchSuggestions.length > 0) {
+      setSearchHint((prev) => (prev === noMatchHint ? "" : prev));
+      return;
+    }
+
+    setSearchHint((prev) => (prev === noMatchHint ? prev : noMatchHint));
+  }, [noMatchHint, searchSuggestions, searchText]);
+
+
+  const basinHighlightedStationIds = useMemo(() => {
+    if (!basinTab || activeTab !== "basin") {
+      return [];
+    }
+    const basinStations = basinGroups.get(basinTab.basinName) ?? [];
+    return basinStations.map((station) => station.station_id);
+  }, [activeTab, basinGroups, basinTab]);
+
+  function commitStationSelection(station: Station) {
+    setSelectedStationId(station.station_id);
+    setStationTab(station);
+    setPreviewStationId(null);
+    mapInstance?.closePopup();
+    setActiveTab("station");
+  }
 
   function zoomToStations(targetStations: Station[]) {
     if (!mapInstance || targetStations.length === 0) {
@@ -200,12 +242,14 @@ export default function LeafletMap() {
   function performSearch(rawKeyword: string) {
     const keyword = rawKeyword.trim();
     if (!keyword) {
-      setHighlightedStationIds([]);
+      setSelectedSearchItem(null);
+      setPreviewStationId(null);
       setSearchHint("请输入 basin / station 名称");
       return false;
     }
     if (!mapInstance) {
-      setHighlightedStationIds([]);
+      setSelectedSearchItem(null);
+      setPreviewStationId(null);
       setSearchHint("地图尚未就绪，请稍后重试");
       return false;
     }
@@ -214,11 +258,15 @@ export default function LeafletMap() {
     if (basin) {
       const matched = basinGroups.get(basin) ?? [];
       zoomToStations(matched);
-      setSelectedStation(null);
-      setSelectedBasin(basin);
-      setBasinStationCount(matched.length);
-      setHighlightedStationIds(matched.map((station) => station.station_id));
-      setSearchHint(`已定位流域: ${basin}（${matched.length} 个站点）`);
+      setSearchHint("");
+      setPreviewStationId(null);
+      setSelectedSearchItem({ label: basin, type: "Basin" });
+      setBasinTab({
+        basinName: basin,
+        stationCount: matched.length,
+      });
+      setActiveTab("basin");
+      mapInstance.closePopup();
       return true;
     }
 
@@ -239,14 +287,18 @@ export default function LeafletMap() {
 
     if (stationMatch) {
       zoomToStations([stationMatch]);
-      setSelectedStation(stationMatch);
-      setHighlightedStationIds([stationMatch.station_id]);
-      setSearchHint(`已定位站点: ${stationDisplayName(stationMatch)}`);
+      setSearchHint("");
+      setSelectedSearchItem({
+        label: stationMatch.station_name || stationDisplayName(stationMatch),
+        type: "Station",
+      });
+      commitStationSelection(stationMatch);
       return true;
     }
 
-    setHighlightedStationIds([]);
-    setSearchHint("未匹配到结果，请尝试更完整的名称");
+    setSelectedSearchItem(null);
+    setPreviewStationId(null);
+    setSearchHint(noMatchHint);
     return false;
   }
 
@@ -257,9 +309,25 @@ export default function LeafletMap() {
   }
 
   // 修改备注: 点击联想词后自动填充并执行搜索
-  function handleSuggestionSelect(value: string) {
-    setSearchText(value);
-    performSearch(value);
+  function handleSuggestionSelect(item: SearchSuggestion) {
+    setSearchText(item.value);
+    setSelectedSearchItem({ label: item.value, type: item.type });
+    performSearch(item.value);
+  }
+
+  function handleOpenBasinTab(basinName: string) {
+    const trimmed = basinName.trim();
+    if (!trimmed) {
+      return;
+    }
+    const matched = basinGroups.get(trimmed) ?? [];
+    setBasinTab({
+      basinName: trimmed,
+      stationCount: matched.length,
+    });
+    setActiveTab("basin");
+    setPreviewStationId(null);
+    mapInstance?.closePopup();
   }
 
   return (
@@ -270,7 +338,14 @@ export default function LeafletMap() {
         searchText={searchText}
         searchHint={searchHint}
         suggestions={searchSuggestions}
-        onSearchTextChange={setSearchText}
+        selectedItem={selectedSearchItem}
+        onSearchTextChange={(value) => {
+          setSearchText(value);
+          setSelectedSearchItem(null);
+          if (searchHint) {
+            setSearchHint("");
+          }
+        }}
         onSubmit={handleSearchSubmit}
         onSuggestionSelect={handleSuggestionSelect}
       />
@@ -300,40 +375,58 @@ export default function LeafletMap() {
         <StationMarkers
           stations={stations}
           markerRadius={markerRadius}
-          highlightedStationIds={highlightedStationIds}
-          onSelect={setSelectedStation}
-          onHighlight={(stationId) => {
-            if (stationId) {
-              setHighlightedStationIds((prev) =>
-                prev.includes(stationId) ? prev : [...prev, stationId],
-              );
-            } else {
-              if (selectedBasin) {
-                const basinStations = basinGroups.get(selectedBasin) ?? [];
-                setHighlightedStationIds(
-                  basinStations.map((station) => station.station_id),
-                );
-              } else {
-                setHighlightedStationIds([]);
-              }
-            }
-          }}
+          activeTab={activeTab}
+          selectedStationId={selectedStationId}
+          previewStationId={previewStationId}
+          basinHighlightedStationIds={basinHighlightedStationIds}
+          onPreviewChange={setPreviewStationId}
+          onCommitSelection={(station) => commitStationSelection(station)}
           getDisplayName={stationDisplayName}
         />
       </MapContainer>
       <StationSidePanel
-        selectedStation={selectedStation}
-        selectedBasin={selectedBasin}
-        basinStationCount={basinStationCount}
-        onCloseStation={() => {
-          setSelectedStation(null);
+        activeTab={activeTab}
+        basinTab={basinTab}
+        stationTab={stationTab}
+        onActivateBasinTab={() => {
+          if (!basinTab) {
+            return;
+          }
+          setActiveTab("basin");
+        }}
+        onOpenBasinTab={handleOpenBasinTab}
+        onActivateStationTab={() => {
+          if (!stationTab) {
+            return;
+          }
+          setActiveTab("station");
+          setSelectedStationId(stationTab.station_id);
+        }}
+        onCloseStationTab={() => {
+          setStationTab(null);
+          setSelectedStationId(null);
+          setPreviewStationId(null);
+          if (basinTab) {
+            setActiveTab("basin");
+          } else {
+            setActiveTab(null);
+          }
           mapInstance?.closePopup();
         }}
-        onCloseBasin={() => {
-          setSelectedStation(null);
-          setSelectedBasin(null);
-          setHighlightedStationIds([]);
-          mapInstance?.closePopup();
+        onCloseBasinTab={() => {
+          const nextStationTab = stationTab;
+          setBasinTab(null);
+          setPreviewStationId(null);
+          if (activeTab === "basin") {
+            if (nextStationTab) {
+              setActiveTab("station");
+              setSelectedStationId(nextStationTab.station_id);
+            } else {
+              setActiveTab(null);
+              setSelectedStationId(null);
+              mapInstance?.closePopup();
+            }
+          }
         }}
         getDisplayName={stationDisplayName}
       />

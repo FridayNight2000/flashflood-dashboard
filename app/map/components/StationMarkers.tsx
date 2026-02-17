@@ -1,69 +1,115 @@
 "use client";
 
-import { CircleMarker, Popup } from "react-leaflet";
+import { CircleMarker, Pane, Popup } from "react-leaflet";
 import type { Station } from "../../types/index";
 import styles from "./StationMarkers.module.css";
 
 type StationMarkersProps = {
   stations: Station[];
   markerRadius: number;
-  highlightedStationIds: string[];
-  onSelect: (station: Station) => void;
-  onHighlight: (stationId: string | null) => void;
+  activeTab: "basin" | "station" | null;
+  selectedStationId: string | null;
+  previewStationId: string | null;
+  basinHighlightedStationIds: string[];
+  onPreviewChange: (stationId: string | null) => void;
+  onCommitSelection: (station: Station) => void;
   getDisplayName: (station: Station) => string;
 };
 
 export default function StationMarkers({
   stations,
   markerRadius,
-  highlightedStationIds,
-  onSelect,
-  onHighlight,
+  activeTab,
+  selectedStationId,
+  previewStationId,
+  basinHighlightedStationIds,
+  onPreviewChange,
+  onCommitSelection,
   getDisplayName,
 }: StationMarkersProps) {
-  // 修改备注: 将高亮ID转为集合，快速判断当前点是否为搜索命中点
-  const highlightedSet = new Set(highlightedStationIds);
+  const basinHighlightedSet = new Set(basinHighlightedStationIds);
 
   return (
     <>
+      <Pane name="station-base" style={{ zIndex: 610 }} />
+      <Pane name="station-preview" style={{ zIndex: 620 }} />
+      <Pane name="station-selected" style={{ zIndex: 630 }} />
+
       {stations.map((station) => {
-        const isHighlighted = highlightedSet.has(station.station_id);
+        const stationId = station.station_id;
+        const isSelected =
+          activeTab === "station" && selectedStationId === stationId;
+        const isPreview = !isSelected && previewStationId === stationId;
+        const isBasinHighlighted =
+          activeTab === "basin" &&
+          !isSelected &&
+          !isPreview &&
+          basinHighlightedSet.has(stationId);
+
+        const pane = isSelected
+          ? "station-selected"
+          : isPreview
+            ? "station-preview"
+            : "station-base";
+
+        const fillColor = isSelected
+          ? "#F85552"
+          : isPreview
+            ? "#F7A34B"
+            : isBasinHighlighted
+              ? "#4A9ECE"
+              : "#3A94C5";
+
+        const strokeColor = isSelected
+          ? "#C12624"
+          : isPreview
+            ? "#C6741A"
+            : isBasinHighlighted
+              ? "#2F7EA8"
+              : "#6B7B85";
+
+        const fillOpacity = isSelected
+          ? 1
+          : isPreview
+            ? 0.95
+            : isBasinHighlighted
+              ? 0.85
+              : 0.4;
+
+        const weight = isSelected ? 2 : isPreview ? 1.5 : isBasinHighlighted ? 1 : 0.6;
 
         return (
           <CircleMarker
-            key={station.station_id}
+            key={stationId}
             center={[station.latitude as number, station.longitude as number]}
             radius={markerRadius}
+            pane={pane}
             pathOptions={{
-              fillColor:
-                station.has_data === 1
-                  ? isHighlighted
-                    ? "#F85552"
-                    : "#3A94C5"
-                  : "#BEC5B2",
-              stroke: false,
-              // 修改备注: 搜索命中点提高不透明度，增强可见性
-              fillOpacity: isHighlighted ? 1 : 0.4,
+              fillColor,
+              color: strokeColor,
+              stroke: true,
+              opacity: 1,
+              weight,
+              fillOpacity,
+              className: isSelected ? styles.selectedPulse : undefined,
             }}
             eventHandlers={{
-              popupopen: () => onHighlight(station.station_id),
-              popupclose: () => onHighlight(null),
+              popupopen: () => onPreviewChange(stationId),
+              popupclose: () => onPreviewChange(null),
             }}
           >
             <Popup>
               <div>
-                <div>
-                  <button
-                    type="button"
-                    className={styles.popupNameBtn}
-                    onClick={() => onSelect(station)}
-                  >
-                    {getDisplayName(station)}
-                  </button>
-                </div>
+                <div className={styles.popupStationName}>{getDisplayName(station)}</div>
                 <div>ID: {station.station_id}</div>
                 <div>Basin: {station.basin_name || "-"}</div>
-                <div>Has data: {station.has_data === 1 ? "Yes" : "No"}</div>
+                <button
+                  type="button"
+                  className={styles.popupViewDetailsBtn}
+                  onClick={() => onCommitSelection(station)}
+                >
+                  View Details
+                </button>
               </div>
             </Popup>
           </CircleMarker>
