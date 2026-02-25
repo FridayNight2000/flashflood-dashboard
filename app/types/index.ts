@@ -2,7 +2,7 @@ export type RootLayoutProps = Readonly<{
   children: React.ReactNode;
 }>;
 
-// 修改备注: 定义站点类型，对应 /api/stations 的返回字段
+// Station type corresponding to fields returned by /api/stations.
 export type Station = {
   station_id: string;
   latitude: number | null;
@@ -16,7 +16,7 @@ export type Station = {
   has_data: number;
 };
 
-// 修改备注: 定义 API 响应类型，用于分页拉取全部站点
+// API response type used for paginated station loading.
 export type StationsApiResponse = {
   items: Station[];
   pagination: {
@@ -27,7 +27,7 @@ export type StationsApiResponse = {
   };
 };
 
-// 修改备注: 单站点事件聚合摘要（side-panel 使用）
+// Aggregated event summary for a single station (used by side panel).
 export type StationEventSummary = {
   totalEvents: number;
   matchedEvents: number;
@@ -41,7 +41,7 @@ export type StationEventSummary = {
   avgFallTime: number | null;
 };
 
-// 修改备注: 单站点最近事件（side-panel 使用）
+// Recent events for a single station (used by side panel).
 export type StationRecentEvent = {
   id: number;
   station_id?: string | null;
@@ -64,7 +64,7 @@ export type StationMatchedPoint = {
   peak_time_str: string | null;
 };
 
-// 修改备注: 单站点事件聚合 API 返回类型
+// API response type for single-station event aggregation.
 export type StationEventsApiResponse = {
   stationId?: string;
   basinName?: string;
@@ -74,7 +74,7 @@ export type StationEventsApiResponse = {
   matchedEventsDetail?: StationRecentEvent[];
 };
 
-// 修改备注: 时间段筛选时的轻量计数响应
+// Lightweight count response for date-range filtering.
 export type StationEventsCountResponse = {
   stationId?: string;
   basinName?: string;

@@ -1,7 +1,7 @@
 .stationSidePanel {
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  right: 2.5%;
   z-index: 1000;
   width: min(435px, calc(100vw - 2rem));
   max-height: calc(100% - 2rem);
@@ -11,6 +11,11 @@
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   display: none;
   overflow: hidden;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.stationSidePanel :is(button, input, select, textarea) {
+  font-family: inherit;
 }
 
 .open {
@@ -331,7 +336,7 @@
   position: absolute;
   top: 0.38rem;
   right: 0.38rem;
-  border: 1px solid #cbd5e1;
+  border: none;
   border-radius: 8px;
   background: #f8fafc;
   width: 28px;

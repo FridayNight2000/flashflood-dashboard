@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useMemo } from "react";
+
 import type { StationMatchedPoint } from "../../types/index";
 
 type StationEventTimelineChartProps = {
@@ -42,14 +43,19 @@ const StationEventTimelineChart = forwardRef<
   const plotHeight = height - chartMargin.top - chartMargin.bottom;
   const safePoints = points.filter(
     (point) =>
-      Number.isFinite(Date.parse(point.peak_time)) && Number.isFinite(point.peak_value),
+      Number.isFinite(Date.parse(point.peak_time)) &&
+      Number.isFinite(point.peak_value),
   );
 
   const chartData = useMemo(() => {
     if (safePoints.length === 0) {
       return {
         points: [] as ChartPoint[],
-        xTicks: [] as { x: number; label: string; align: "start" | "middle" | "end" }[],
+        xTicks: [] as {
+          x: number;
+          label: string;
+          align: "start" | "middle" | "end";
+        }[],
         yTicks: [] as { y: number; label: string }[],
       };
     }
@@ -77,7 +83,11 @@ const StationEventTimelineChart = forwardRef<
       };
     });
 
-    const xTicks = Array.from({ length: 5 }).map((_, idx) => {
+    const xTicks: Array<{
+      x: number;
+      label: string;
+      align: "start" | "middle" | "end";
+    }> = Array.from({ length: 5 }).map((_, idx) => {
       const ratio = idx / 4;
       const ts = minTs + ratio * xSpan;
       return {
@@ -113,7 +123,13 @@ const StationEventTimelineChart = forwardRef<
       aria-label={`${title} chart`}
     >
       <rect x="0" y="0" width={width} height={height} fill="#ffffff" />
-      <text x={width / 2} y={16} textAnchor="middle" fontSize="12" fill="#0f172a">
+      <text
+        x={width / 2}
+        y={16}
+        textAnchor="middle"
+        fontSize="12"
+        fill="#0f172a"
+      >
         {title}
       </text>
       <rect
@@ -186,7 +202,14 @@ const StationEventTimelineChart = forwardRef<
       ))}
 
       {chartData.points.map((point, idx) => (
-        <circle key={idx} cx={point.x} cy={point.y} r="2.2" fill="#0f766e" opacity="0.9">
+        <circle
+          key={idx}
+          cx={point.x}
+          cy={point.y}
+          r="2.2"
+          fill="#0f766e"
+          opacity="0.9"
+        >
           <title>{`${point.label} | ${point.value.toFixed(2)}`}</title>
         </circle>
       ))}

@@ -42,7 +42,11 @@ const StationPeakDistributionChart = forwardRef<
       return {
         linePath: "",
         points: [] as ChartPoint[],
-        xTicks: [] as { x: number; label: string; align: "start" | "middle" | "end" }[],
+        xTicks: [] as {
+          x: number;
+          label: string;
+          align: "start" | "middle" | "end";
+        }[],
         yTicks: [] as { y: number; label: string }[],
       };
     }
@@ -69,7 +73,11 @@ const StationPeakDistributionChart = forwardRef<
       .map((point, idx) => `${idx === 0 ? "M" : "L"}${point.x},${point.y}`)
       .join(" ");
 
-    const xTicks = Array.from({ length: 5 }).map((_, idx) => {
+    const xTicks: Array<{
+      x: number;
+      label: string;
+      align: "start" | "middle" | "end";
+    }> = Array.from({ length: 5 }).map((_, idx) => {
       const ratio = idx / 4;
       const rank = Math.round(1 + ratio * (maxRank - 1));
       return {
@@ -106,7 +114,13 @@ const StationPeakDistributionChart = forwardRef<
       aria-label={`${title} chart`}
     >
       <rect x="0" y="0" width={width} height={height} fill="#ffffff" />
-      <text x={width / 2} y={16} textAnchor="middle" fontSize="12" fill="#0f172a">
+      <text
+        x={width / 2}
+        y={16}
+        textAnchor="middle"
+        fontSize="12"
+        fill="#0f172a"
+      >
         {title}
       </text>
       <rect

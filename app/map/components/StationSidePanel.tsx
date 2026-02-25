@@ -1,47 +1,45 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from 'react';
+
 import type {
   Station,
-  StationMatchedPoint,
   StationEventsApiResponse,
   StationEventSummary,
-} from "../../types/index";
-import StationEventTimelineChart from "./StationEventTimelineChart";
-import StationMonthlyFrequencyChart from "./StationMonthlyFrequencyChart";
-import StationPeakDistributionChart from "./StationPeakDistributionChart";
-import styles from "./StationSidePanel.module.css";
+  StationMatchedPoint,
+} from '../../types/index';
+import StationEventTimelineChart from './StationEventTimelineChart';
+import StationMonthlyFrequencyChart from './StationMonthlyFrequencyChart';
+import StationPeakDistributionChart from './StationPeakDistributionChart';
+import styles from './StationSidePanel.module.css';
 
 type BasinTabData = {
   basinName: string;
   stationCount: number;
 };
 
-type ChartPresetId =
-  | "timeline_all"
-  | "seasonal_frequency"
-  | "peak_distribution";
+type ChartPresetId = 'timeline_all' | 'seasonal_frequency' | 'peak_distribution';
 
 const chartPresets: Array<{
   id: ChartPresetId;
   label: string;
 }> = [
   {
-    id: "timeline_all",
-    label: "Timeline",
+    id: 'timeline_all',
+    label: 'Timeline',
   },
   {
-    id: "seasonal_frequency",
-    label: "Season",
+    id: 'seasonal_frequency',
+    label: 'Season',
   },
   {
-    id: "peak_distribution",
-    label: "Peaks",
+    id: 'peak_distribution',
+    label: 'Peaks',
   },
 ];
 
 type StationSidePanelProps = {
-  activeTab: "basin" | "station" | null;
+  activeTab: 'basin' | 'station' | null;
   basinTab: BasinTabData | null;
   stationTab: Station | null;
   onActivateBasinTab: () => void;
@@ -54,7 +52,7 @@ type StationSidePanelProps = {
 
 function formatNumber(value: number | null): string {
   if (value === null || Number.isNaN(value)) {
-    return "-";
+    return '-';
   }
   return value.toFixed(2);
 }
@@ -67,7 +65,7 @@ function toDateOnly(value: string | null): string | null {
 }
 
 function sanitizeFileNamePart(value: string): string {
-  return value.replace(/[\\/:*?"<>|\s]+/g, "_");
+  return value.replace(/[\\/:*?"<>|\s]+/g, '_');
 }
 
 export default function StationSidePanel({
@@ -81,18 +79,14 @@ export default function StationSidePanel({
   onCloseStationTab,
   getDisplayName,
 }: StationSidePanelProps) {
-  // 修改备注: 缓存 station_id / basin_name 对应的聚合结果，避免重复请求
+  // Cache aggregated results for station_id / basin_name to avoid repeated requests.
   const cacheRef = useRef<Record<string, StationEventsApiResponse>>({});
-  const [eventSummary, setEventSummary] = useState<StationEventSummary | null>(
-    null,
-  );
+  const [eventSummary, setEventSummary] = useState<StationEventSummary | null>(null);
   const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState<string | null>(null);
-  const [peakStartDate, setPeakStartDate] = useState("");
-  const [peakEndDate, setPeakEndDate] = useState("");
-  const [rangeMatchedEvents, setRangeMatchedEvents] = useState<number | null>(
-    null,
-  );
+  const [peakStartDate, setPeakStartDate] = useState('');
+  const [peakEndDate, setPeakEndDate] = useState('');
+  const [rangeMatchedEvents, setRangeMatchedEvents] = useState<number | null>(null);
   const [totalEvents, setTotalEvents] = useState<number | null>(null);
   const [isLoadingRangeCount, setIsLoadingRangeCount] = useState(false);
   const [selectedPresetByTab, setSelectedPresetByTab] = useState<
@@ -103,19 +97,17 @@ export default function StationSidePanel({
   const [isDownloadingEvents, setIsDownloadingEvents] = useState(false);
   const chartSvgRef = useRef<SVGSVGElement | null>(null);
 
-  const currentStation = activeTab === "station" ? stationTab : null;
-  const currentBasin = activeTab === "basin" ? basinTab?.basinName ?? null : null;
-  const currentBasinCount = activeTab === "basin" ? basinTab?.stationCount ?? 0 : 0;
+  const currentStation = activeTab === 'station' ? stationTab : null;
+  const currentBasin = activeTab === 'basin' ? (basinTab?.basinName ?? null) : null;
+  const currentBasinCount = activeTab === 'basin' ? (basinTab?.stationCount ?? 0) : 0;
   const activeTabKey = currentStation
     ? `s:${currentStation.station_id}`
     : currentBasin
       ? `b:${currentBasin}`
       : null;
-  const selectedPreset = activeTabKey ? selectedPresetByTab[activeTabKey] ?? null : null;
+  const selectedPreset = activeTabKey ? (selectedPresetByTab[activeTabKey] ?? null) : null;
 
-  const selectedPresetMeta = chartPresets.find(
-    (preset) => preset.id === selectedPreset,
-  );
+  const selectedPresetMeta = chartPresets.find((preset) => preset.id === selectedPreset);
   const chartPoints = useMemo(() => matchedSeries, [matchedSeries]);
   const monthlyFrequency = useMemo(() => {
     const monthCounts = Array.from({ length: 12 }, (_, monthIndex) => ({
@@ -145,8 +137,8 @@ export default function StationSidePanel({
   }, [matchedSeries]);
 
   const isOpen =
-    (activeTab === "station" && Boolean(stationTab)) ||
-    (activeTab === "basin" && Boolean(basinTab));
+    (activeTab === 'station' && Boolean(stationTab)) ||
+    (activeTab === 'basin' && Boolean(basinTab));
 
   function clearTabPreset(tabKey: string | null) {
     if (!tabKey) {
@@ -171,7 +163,7 @@ export default function StationSidePanel({
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svgEl);
     const svgBlob = new Blob([svgString], {
-      type: "image/svg+xml;charset=utf-8",
+      type: 'image/svg+xml;charset=utf-8',
     });
     const blobUrl = URL.createObjectURL(svgBlob);
 
@@ -179,7 +171,7 @@ export default function StationSidePanel({
       const image = new Image();
       const loaded = new Promise<void>((resolve, reject) => {
         image.onload = () => resolve();
-        image.onerror = () => reject(new Error("Failed to load SVG data."));
+        image.onerror = () => reject(new Error('Failed to load SVG data.'));
       });
       image.src = blobUrl;
       await loaded;
@@ -188,22 +180,22 @@ export default function StationSidePanel({
       const width = svgEl.viewBox.baseVal.width || svgEl.clientWidth || 640;
       const height = svgEl.viewBox.baseVal.height || svgEl.clientHeight || 260;
 
-      const canvas = document.createElement("canvas");
+      const canvas = document.createElement('canvas');
       canvas.width = Math.round(width * scale);
       canvas.height = Math.round(height * scale);
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       if (!ctx) {
         return;
       }
       ctx.scale(scale, scale);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, width, height);
       ctx.drawImage(image, 0, 0, width, height);
 
-      const a = document.createElement("a");
-      const start = rangeStartDate ?? "start";
-      const end = rangeEndDate ?? "end";
-      a.href = canvas.toDataURL("image/png");
+      const a = document.createElement('a');
+      const start = rangeStartDate ?? 'start';
+      const end = rangeEndDate ?? 'end';
+      a.href = canvas.toDataURL('image/png');
 
       const filePrefix = currentStation
         ? sanitizeFileNamePart(getDisplayName(currentStation))
@@ -225,8 +217,8 @@ export default function StationSidePanel({
       setEventsError(null);
 
       const query = new URLSearchParams({
-        includeRecent: "0",
-        includeMatchedEvents: "1",
+        includeRecent: '0',
+        includeMatchedEvents: '1',
         peakStart: rangeStartDate,
         peakEnd: rangeEndDate,
       });
@@ -244,27 +236,26 @@ export default function StationSidePanel({
       const detailedRows = data.matchedEventsDetail ?? [];
       const isBasinExport = Boolean(currentBasin) && !currentStation;
       const isStationExport = Boolean(currentStation);
-      const stationNameForExport = currentStation
-        ? getDisplayName(currentStation)
-        : null;
+      const stationNameForExport = currentStation ? getDisplayName(currentStation) : null;
       const basinNameForExport = currentStation?.basin_name ?? currentBasin ?? null;
-      const rows = (detailedRows.length > 0
-        ? detailedRows
-        : (data.matchedSeries ?? []).map((item) => ({
-            id: item.id,
-            station_id: currentStation?.station_id ?? null,
-            basin_name: currentBasin,
-            start_time: null,
-            peak_time: item.peak_time,
-            end_time: null,
-            start_value: null,
-            peak_value: item.peak_value,
-            end_value: null,
-            rise_time: null,
-            fall_time: null,
-            peak_time_str: item.peak_time_str,
-          })))
-      .map((item, index) => {
+      const rows = (
+        detailedRows.length > 0
+          ? detailedRows
+          : (data.matchedSeries ?? []).map((item) => ({
+              id: item.id,
+              station_id: currentStation?.station_id ?? null,
+              basin_name: currentBasin,
+              start_time: null,
+              peak_time: item.peak_time,
+              end_time: null,
+              start_value: null,
+              peak_value: item.peak_value,
+              end_value: null,
+              rise_time: null,
+              fall_time: null,
+              peak_time_str: item.peak_time_str,
+            }))
+      ).map((item, index) => {
         const baseRow = {
           index: index + 1,
           start_time: item.start_time,
@@ -300,31 +291,36 @@ export default function StationSidePanel({
         };
       });
 
-      const XLSX = await import("xlsx");
-      const worksheet = XLSX.utils.json_to_sheet(rows);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "events");
+      const ExcelJS = await import('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('events');
 
-      const workbookArray = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      const blob = new Blob([workbookArray], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      if (rows.length > 0) {
+        const headers = Object.keys(rows[0]);
+        worksheet.columns = headers.map((header) => ({
+          header,
+          key: header,
+        }));
+        rows.forEach((row) => {
+          worksheet.addRow(row);
+        });
+      }
+
+      const workbookBuffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([workbookBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
 
       const blobUrl = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
+      const anchor = document.createElement('a');
       anchor.href = blobUrl;
 
-      const prefix = currentStation
-        ? `station_${stationNameForExport}`
-        : `basin_${currentBasin}`;
+      const prefix = currentStation ? `station_${stationNameForExport}` : `basin_${currentBasin}`;
       anchor.download = `${sanitizeFileNamePart(prefix)}_${rangeStartDate}_to_${rangeEndDate}.xlsx`;
       anchor.click();
       URL.revokeObjectURL(blobUrl);
     } catch {
-      setEventsError("Failed to download matched events file.");
+      setEventsError('Failed to download matched events file.');
     } finally {
       setIsDownloadingEvents(false);
     }
@@ -335,8 +331,8 @@ export default function StationSidePanel({
       setEventSummary(null);
       setIsLoadingEvents(false);
       setEventsError(null);
-      setPeakStartDate("");
-      setPeakEndDate("");
+      setPeakStartDate('');
+      setPeakEndDate('');
       setRangeMatchedEvents(null);
       setTotalEvents(null);
       setIsLoadingRangeCount(false);
@@ -344,9 +340,7 @@ export default function StationSidePanel({
       return;
     }
 
-    const cacheKey = currentStation
-      ? `s:${currentStation.station_id}`
-      : `b:${currentBasin}`;
+    const cacheKey = currentStation ? `s:${currentStation.station_id}` : `b:${currentBasin}`;
 
     const cached = cacheRef.current[cacheKey];
     if (cached) {
@@ -385,8 +379,8 @@ export default function StationSidePanel({
         setRangeMatchedEvents(data.summary.matchedEvents);
         setTotalEvents(data.summary.matchedEvents);
       } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          setEventsError("Failed to load event summary.");
+        if ((error as Error).name !== 'AbortError') {
+          setEventsError('Failed to load event summary.');
           setEventSummary(null);
           setRangeMatchedEvents(null);
         }
@@ -398,7 +392,6 @@ export default function StationSidePanel({
     fetchEvents();
     return () => controller.abort();
   }, [currentStation, currentBasin]);
-
 
   useEffect(() => {
     const minDate = toDateOnly(eventSummary?.minPeakTime ?? null);
@@ -425,12 +418,12 @@ export default function StationSidePanel({
       try {
         setIsLoadingRangeCount(true);
         const query = new URLSearchParams({
-          includeRecent: "0",
+          includeRecent: '0',
           peakStart: rangeStartDate,
           peakEnd: rangeEndDate,
         });
         if (selectedPreset) {
-          query.set("includeMatchedSeries", "1");
+          query.set('includeMatchedSeries', '1');
         }
 
         const url = currentStation
@@ -447,7 +440,7 @@ export default function StationSidePanel({
         setRangeMatchedEvents(data.summary.matchedEvents);
         setMatchedSeries(data.matchedSeries ?? []);
       } catch (error) {
-        if ((error as Error).name !== "AbortError") {
+        if ((error as Error).name !== 'AbortError') {
           setRangeMatchedEvents(null);
           setMatchedSeries([]);
         }
@@ -473,19 +466,19 @@ export default function StationSidePanel({
         `Avg Peak: ${formatNumber(eventSummary.avgPeakValue)}`,
         `Avg Rise Time: ${formatNumber(eventSummary.avgRiseTime)}`,
         `Avg Fall Time: ${formatNumber(eventSummary.avgFallTime)}`,
-      ].join("\n");
+      ].join('\n');
 
       try {
         await navigator.clipboard.writeText(text);
       } catch {
-        const textarea = document.createElement("textarea");
+        const textarea = document.createElement('textarea');
         textarea.value = text;
-        textarea.setAttribute("readonly", "");
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
         document.body.appendChild(textarea);
         textarea.select();
-        document.execCommand("copy");
+        document.execCommand('copy');
         document.body.removeChild(textarea);
       }
 
@@ -502,7 +495,9 @@ export default function StationSidePanel({
           <>
             {minPeakDate && maxPeakDate && (
               <>
-                <p><strong>Time Range</strong></p>
+                <p>
+                  <strong>Time Range</strong>
+                </p>
                 <div className={styles.sidePanelDateRow}>
                   <input
                     id="peak-start-date"
@@ -510,7 +505,7 @@ export default function StationSidePanel({
                     type="date"
                     min={minPeakDate ?? undefined}
                     max={maxPeakDate ?? undefined}
-                    value={rangeStartDate ?? ""}
+                    value={rangeStartDate ?? ''}
                     onChange={(event) => {
                       const next = event.target.value;
                       setPeakStartDate(next);
@@ -525,7 +520,7 @@ export default function StationSidePanel({
                     type="date"
                     min={minPeakDate ?? undefined}
                     max={maxPeakDate ?? undefined}
-                    value={rangeEndDate ?? ""}
+                    value={rangeEndDate ?? ''}
                     onChange={(event) => {
                       const next = event.target.value;
                       setPeakEndDate(next);
@@ -537,10 +532,8 @@ export default function StationSidePanel({
                 </div>
                 <div className={styles.filteredEventsRow}>
                   <div className={styles.filteredEventsLeft}>
-                    <strong>Events:</strong>{" "}
-                    <span>
-                      {isLoadingRangeCount ? "Loading..." : (rangeMatchedEvents ?? "-")}
-                    </span>
+                    <strong>Events:</strong>{' '}
+                    <span>{isLoadingRangeCount ? 'Loading...' : (rangeMatchedEvents ?? '-')}</span>
                   </div>
                   <button
                     type="button"
@@ -548,7 +541,7 @@ export default function StationSidePanel({
                     onClick={() => void handleDownloadEventsXlsx()}
                     disabled={isLoadingRangeCount || isDownloadingEvents}
                   >
-                    {isDownloadingEvents ? "Downloading..." : "Download"}
+                    {isDownloadingEvents ? 'Downloading...' : 'Download'}
                   </button>
                 </div>
               </>
@@ -558,10 +551,10 @@ export default function StationSidePanel({
                 type="button"
                 className={styles.metricsCopyBtn}
                 aria-label="Copy metrics"
-                title={isMetricsCopied ? "Copied" : "Copy metrics"}
+                title={isMetricsCopied ? 'Copied' : 'Copy metrics'}
                 onClick={() => void handleCopyMetrics()}
               >
-                {isMetricsCopied ? "✓" : "📋"}
+                {isMetricsCopied ? '✓' : '📋'}
               </button>
 
               <div className={styles.metricsGrid}>
@@ -584,7 +577,9 @@ export default function StationSidePanel({
               </div>
             </section>
             <section className={styles.presetSection}>
-              <p><strong>Preset charts</strong></p>
+              <p>
+                <strong>Preset charts</strong>
+              </p>
               <div className={styles.presetList}>
                 {chartPresets.map((preset) => {
                   const isActive = selectedPreset === preset.id;
@@ -592,7 +587,7 @@ export default function StationSidePanel({
                     <button
                       key={preset.id}
                       type="button"
-                      className={`${styles.presetOption} ${isActive ? styles.presetOptionActive : ""}`}
+                      className={`${styles.presetOption} ${isActive ? styles.presetOptionActive : ''}`}
                       onClick={() => {
                         if (!activeTabKey) {
                           return;
@@ -601,8 +596,7 @@ export default function StationSidePanel({
                           const currentPreset = prev[activeTabKey] ?? null;
                           return {
                             ...prev,
-                            [activeTabKey]:
-                              currentPreset === preset.id ? null : preset.id,
+                            [activeTabKey]: currentPreset === preset.id ? null : preset.id,
                           };
                         });
                       }}
@@ -625,13 +619,13 @@ export default function StationSidePanel({
     }
     const chartName = currentStation
       ? `station ${getDisplayName(currentStation)}`
-      : `basin ${currentBasin ?? "Unknown"}`;
-    const chartStart = rangeStartDate ?? "start";
-    const chartEnd = rangeEndDate ?? "end";
+      : `basin ${currentBasin ?? 'Unknown'}`;
+    const chartStart = rangeStartDate ?? 'start';
+    const chartEnd = rangeEndDate ?? 'end';
     const chartTitle =
-      selectedPreset === "seasonal_frequency"
+      selectedPreset === 'seasonal_frequency'
         ? `${chartName} · Monthly Event Frequency · ${chartStart}–${chartEnd}`
-        : selectedPreset === "peak_distribution"
+        : selectedPreset === 'peak_distribution'
           ? `${chartName} · Peak Exceedance Curve · ${chartStart}–${chartEnd}`
           : `${chartName} · Event Timeline · ${chartStart}–${chartEnd}`;
 
@@ -648,13 +642,13 @@ export default function StationSidePanel({
               aria-label="Download chart as PNG"
             >
               <div className={styles.chartCanvas}>
-                {selectedPreset === "seasonal_frequency" ? (
+                {selectedPreset === 'seasonal_frequency' ? (
                   <StationMonthlyFrequencyChart
                     ref={chartSvgRef}
                     points={monthlyFrequency}
                     title={chartTitle}
                   />
-                ) : selectedPreset === "peak_distribution" ? (
+                ) : selectedPreset === 'peak_distribution' ? (
                   <StationPeakDistributionChart
                     ref={chartSvgRef}
                     points={peakDistribution}
@@ -679,27 +673,31 @@ export default function StationSidePanel({
 
   return (
     <aside
-      className={`${styles.stationSidePanel} ${isOpen ? styles.open : ""} ${
-        selectedPreset ? styles.panelExpanded : ""
+      className={`${styles.stationSidePanel} ${isOpen ? styles.open : ''} ${
+        selectedPreset ? styles.panelExpanded : ''
       }`}
     >
       {isOpen ? (
         <>
           <div className={styles.stationSidePanelHeader}>
             <div className={styles.tabStrip}>
-              <div className={styles.tabList} role="tablist" aria-label="Panel tabs">
+              <div
+                className={styles.tabList}
+                role="tablist"
+                aria-label="Panel tabs"
+              >
                 {basinTab && (
                   <div
                     className={`${styles.browserTab} ${
-                      activeTab === "basin" ? styles.browserTabActive : ""
+                      activeTab === 'basin' ? styles.browserTabActive : ''
                     }`}
                   >
                     <button
                       type="button"
                       className={styles.browserTabLabel}
                       role="tab"
-                      aria-selected={activeTab === "basin"}
-                      tabIndex={activeTab === "basin" ? 0 : -1}
+                      aria-selected={activeTab === 'basin'}
+                      tabIndex={activeTab === 'basin' ? 0 : -1}
                       onClick={onActivateBasinTab}
                     >
                       Basin: {basinTab.basinName}
@@ -710,9 +708,7 @@ export default function StationSidePanel({
                         className={styles.browserTabClose}
                         aria-label="Close basin tab"
                         onClick={() => {
-                          clearTabPreset(
-                            basinTab ? `b:${basinTab.basinName}` : null,
-                          );
+                          clearTabPreset(basinTab ? `b:${basinTab.basinName}` : null);
                           onCloseBasinTab();
                         }}
                       >
@@ -724,15 +720,15 @@ export default function StationSidePanel({
                 {stationTab && (
                   <div
                     className={`${styles.browserTab} ${
-                      activeTab === "station" ? styles.browserTabActive : ""
+                      activeTab === 'station' ? styles.browserTabActive : ''
                     }`}
                   >
                     <button
                       type="button"
                       className={styles.browserTabLabel}
                       role="tab"
-                      aria-selected={activeTab === "station"}
-                      tabIndex={activeTab === "station" ? 0 : -1}
+                      aria-selected={activeTab === 'station'}
+                      tabIndex={activeTab === 'station' ? 0 : -1}
                       onClick={onActivateStationTab}
                     >
                       Station: {getDisplayName(stationTab)}
@@ -743,9 +739,7 @@ export default function StationSidePanel({
                         className={styles.browserTabClose}
                         aria-label="Close station tab"
                         onClick={() => {
-                          clearTabPreset(
-                            stationTab ? `s:${stationTab.station_id}` : null,
-                          );
+                          clearTabPreset(stationTab ? `s:${stationTab.station_id}` : null);
                           onCloseStationTab();
                         }}
                       >
@@ -767,25 +761,25 @@ export default function StationSidePanel({
 
                     return (
                       <>
-                  <p>
-                    {basinName ? (
-                      <>
-                        <button
-                          type="button"
-                          className={styles.basinInlineLink}
-                          onClick={() => onOpenBasinTab(basinName)}
-                        >
-                          {basinName}
-                        </button>
-                        {" "}basin
-                      </>
-                    ) : (
-                      "- basin"
-                    )}{" "}
-                    • {isLoadingEvents ? "Loading..." : (totalEvents ?? "-")} events
-                  </p>
+                        <p>
+                          {basinName ? (
+                            <>
+                              <button
+                                type="button"
+                                className={styles.basinInlineLink}
+                                onClick={() => onOpenBasinTab(basinName)}
+                              >
+                                {basinName}
+                              </button>{' '}
+                              basin
+                            </>
+                          ) : (
+                            '- basin'
+                          )}{' '}
+                          • {isLoadingEvents ? 'Loading...' : (totalEvents ?? '-')} events
+                        </p>
 
-                  {renderEventsAnalysis()}
+                        {renderEventsAnalysis()}
                       </>
                     );
                   })()}
@@ -793,7 +787,8 @@ export default function StationSidePanel({
               ) : (
                 <section className={styles.infoColumn}>
                   <p>
-                    {currentBasinCount} <strong>stations</strong> • {isLoadingEvents ? "Loading..." : (totalEvents ?? "-")} <strong>events</strong>
+                    {currentBasinCount} <strong>stations</strong> •{' '}
+                    {isLoadingEvents ? 'Loading...' : (totalEvents ?? '-')} <strong>events</strong>
                   </p>
                   {renderEventsAnalysis()}
                 </section>

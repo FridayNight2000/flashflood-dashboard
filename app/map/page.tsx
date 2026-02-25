@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import styles from "./page.module.css";
+import dynamic from 'next/dynamic';
+import styles from './page.module.css';
 
-const LeafletMap = dynamic(() => import("./LeafletMap"), {
+const LeafletMap = dynamic(() => import('./LeafletMap'), {
   ssr: false,
   loading: () => <p>Loading map...</p>,
 });

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import type { Map as LeafletMapInstance } from "leaflet";
+import { useEffect } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 
 type ZoomWatcherProps = {

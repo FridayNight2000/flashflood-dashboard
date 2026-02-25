@@ -12,14 +12,12 @@ body {
 body {
   background-color: #575757;
   min-height: 100vh;
-  padding-inline: 0.5%;
-  padding-block: 2%;
+  padding: 0.5%;
 }
 
 code,
 pre,
 kbd,
 samp {
-  font-family:
-    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }

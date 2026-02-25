@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useRef, useState, type FormEvent } from "react";
-import styles from "./MapToolbar.module.css";
+import { type SyntheticEvent, useRef, useState } from 'react';
+
+import styles from './MapToolbar.module.css';
 
 export type SearchSuggestion = {
   value: string;
-  type: "Basin" | "Station";
+  type: 'Basin' | 'Station';
 };
 
 export type SelectedSearchItem = {
   label: string;
-  type: "Basin" | "Station";
+  type: 'Basin' | 'Station';
 };
 
 type MapToolbarProps = {
@@ -21,7 +22,7 @@ type MapToolbarProps = {
   suggestions: SearchSuggestion[];
   selectedItem: SelectedSearchItem | null;
   onSearchTextChange: (value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: SyntheticEvent<HTMLFormElement>) => void;
   onSuggestionSelect: (item: SearchSuggestion) => void;
 };
 
@@ -40,10 +41,10 @@ export default function MapToolbar({
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   const placeholder = isLoading
-    ? "Loading stations..."
+    ? 'Loading stations...'
     : error
-      ? "Stations unavailable"
-      : "Search by basin / station";
+      ? 'Stations unavailable'
+      : 'Search by basin / station';
 
   const displayValue = isInputFocused
     ? searchText
@@ -52,7 +53,7 @@ export default function MapToolbar({
       : searchText;
 
   const inputClassName = `${styles.mapInput} ${
-    isInputFocused || !selectedItem ? "" : styles.mapInputMuted
+    isInputFocused || !selectedItem ? '' : styles.mapInputMuted
   }`.trim();
 
   return (
@@ -69,7 +70,7 @@ export default function MapToolbar({
           placeholder={placeholder}
         />
       </form>
-      {/* 修改备注: 搜索联想列表，展示 basin_name + station_name 前缀匹配项 */}
+      {/* Search suggestion list: show prefix matches for basin_name + station_name. */}
       {isInputFocused && suggestions.length > 0 && (
         <ul className={styles.mapSuggestions}>
           {suggestions.map((item) => (
