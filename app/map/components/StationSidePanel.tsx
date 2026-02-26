@@ -1,13 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import useSWR from 'swr';
 
-import type {
-  Station,
-  StationEventsApiResponse,
-  StationEventSummary,
-  StationMatchedPoint,
-} from '../../types/index';
+import type { Station, StationEventsApiResponse } from '../../types/index';
 import StationEventTimelineChart from './StationEventTimelineChart';
 import StationMonthlyFrequencyChart from './StationMonthlyFrequencyChart';
 import StationPeakDistributionChart from './StationPeakDistributionChart';
@@ -68,6 +64,14 @@ function sanitizeFileNamePart(value: string): string {
   return value.replace(/[\\/:*?"<>|\s]+/g, '_');
 }
 
+async function fetcher(url: string): Promise<StationEventsApiResponse> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Request failed with status ${res.status}`);
+  }
+  return (await res.json()) as StationEventsApiResponse;
+}
+
 export default function StationSidePanel({
   activeTab,
   basinTab,
@@ -79,20 +83,12 @@ export default function StationSidePanel({
   onCloseStationTab,
   getDisplayName,
 }: StationSidePanelProps) {
-  // Cache aggregated results for station_id / basin_name to avoid repeated requests.
-  const cacheRef = useRef<Record<string, StationEventsApiResponse>>({});
-  const [eventSummary, setEventSummary] = useState<StationEventSummary | null>(null);
-  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
-  const [eventsError, setEventsError] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [peakStartDate, setPeakStartDate] = useState('');
   const [peakEndDate, setPeakEndDate] = useState('');
-  const [rangeMatchedEvents, setRangeMatchedEvents] = useState<number | null>(null);
-  const [totalEvents, setTotalEvents] = useState<number | null>(null);
-  const [isLoadingRangeCount, setIsLoadingRangeCount] = useState(false);
   const [selectedPresetByTab, setSelectedPresetByTab] = useState<
     Record<string, ChartPresetId | null>
   >({});
-  const [matchedSeries, setMatchedSeries] = useState<StationMatchedPoint[]>([]);
   const [isMetricsCopied, setIsMetricsCopied] = useState(false);
   const [isDownloadingEvents, setIsDownloadingEvents] = useState(false);
   const chartSvgRef = useRef<SVGSVGElement | null>(null);
@@ -106,9 +102,56 @@ export default function StationSidePanel({
       ? `b:${currentBasin}`
       : null;
   const selectedPreset = activeTabKey ? (selectedPresetByTab[activeTabKey] ?? null) : null;
+  const eventsBasePath = currentStation
+    ? `/api/stations/${currentStation.station_id}/events`
+    : currentBasin
+      ? `/api/basins/${encodeURIComponent(currentBasin)}/events`
+      : null;
+  const summaryRequestUrl = eventsBasePath ? `${eventsBasePath}?includeRecent=0` : null;
+  const {
+    data: summaryData,
+    error: summaryError,
+    isLoading: isLoadingEvents,
+  } = useSWR(summaryRequestUrl, fetcher, {
+    revalidateOnFocus: false,
+  });
 
   const selectedPresetMeta = chartPresets.find((preset) => preset.id === selectedPreset);
-  const chartPoints = useMemo(() => matchedSeries, [matchedSeries]);
+  const minPeakDate = toDateOnly(summaryData?.summary.minPeakTime ?? null);
+  const maxPeakDate = toDateOnly(summaryData?.summary.maxPeakTime ?? null);
+  const rangeStartDate = peakStartDate || minPeakDate;
+  const rangeEndDate = peakEndDate || maxPeakDate;
+  const hasDateFilterChanged = Boolean(
+    (minPeakDate && rangeStartDate && rangeStartDate !== minPeakDate) ||
+    (maxPeakDate && rangeEndDate && rangeEndDate !== maxPeakDate),
+  );
+  const shouldFetchRangeData = Boolean(selectedPreset) || hasDateFilterChanged;
+  const rangeRequestUrl = useMemo(() => {
+    if (!eventsBasePath || !rangeStartDate || !rangeEndDate || !shouldFetchRangeData) {
+      return null;
+    }
+    const query = new URLSearchParams({
+      includeRecent: '0',
+      peakStart: rangeStartDate,
+      peakEnd: rangeEndDate,
+    });
+    if (selectedPreset) {
+      query.set('includeMatchedSeries', '1');
+    }
+    return `${eventsBasePath}?${query.toString()}`;
+  }, [eventsBasePath, rangeStartDate, rangeEndDate, selectedPreset, shouldFetchRangeData]);
+  const {
+    data: rangeData,
+    error: rangeError,
+    isLoading: isLoadingRangeCount,
+  } = useSWR(rangeRequestUrl, fetcher, {
+    revalidateOnFocus: false,
+  });
+  const eventSummary = rangeData?.summary ?? summaryData?.summary ?? null;
+  const totalEvents = summaryData?.summary.matchedEvents ?? null;
+  const rangeMatchedEvents = rangeData?.summary.matchedEvents ?? totalEvents;
+  const matchedSeries = useMemo(() => rangeData?.matchedSeries ?? [], [rangeData?.matchedSeries]);
+  const chartPoints = matchedSeries;
   const monthlyFrequency = useMemo(() => {
     const monthCounts = Array.from({ length: 12 }, (_, monthIndex) => ({
       month: monthIndex + 1,
@@ -214,7 +257,7 @@ export default function StationSidePanel({
 
     try {
       setIsDownloadingEvents(true);
-      setEventsError(null);
+      setDownloadError(null);
 
       const query = new URLSearchParams({
         includeRecent: '0',
@@ -320,140 +363,30 @@ export default function StationSidePanel({
       anchor.click();
       URL.revokeObjectURL(blobUrl);
     } catch {
-      setEventsError('Failed to download matched events file.');
+      setDownloadError('Failed to download matched events file.');
     } finally {
       setIsDownloadingEvents(false);
     }
   }
 
   useEffect(() => {
-    if (!currentStation && !currentBasin) {
-      setEventSummary(null);
-      setIsLoadingEvents(false);
-      setEventsError(null);
+    if (!activeTabKey) {
       setPeakStartDate('');
       setPeakEndDate('');
-      setRangeMatchedEvents(null);
-      setTotalEvents(null);
-      setIsLoadingRangeCount(false);
-      setMatchedSeries([]);
       return;
     }
-
-    const cacheKey = currentStation ? `s:${currentStation.station_id}` : `b:${currentBasin}`;
-
-    const cached = cacheRef.current[cacheKey];
-    if (cached) {
-      setEventSummary(cached.summary);
-      setRangeMatchedEvents(cached.summary.matchedEvents);
-      setTotalEvents(cached.summary.matchedEvents);
-      setIsLoadingEvents(false);
-      setEventsError(null);
-      setMatchedSeries([]);
+    if (!minPeakDate || !maxPeakDate) {
       return;
     }
-    setEventSummary(null);
-
-    const controller = new AbortController();
-
-    async function fetchEvents() {
-      try {
-        setIsLoadingEvents(true);
-        setEventsError(null);
-
-        const url = currentStation
-          ? `/api/stations/${currentStation.station_id}/events?includeRecent=0`
-          : `/api/basins/${encodeURIComponent(currentBasin!)}/events?includeRecent=0`;
-
-        const res = await fetch(url, {
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`);
-        }
-
-        const data = (await res.json()) as StationEventsApiResponse;
-        cacheRef.current[cacheKey] = data;
-        setEventSummary(data.summary);
-        setRangeMatchedEvents(data.summary.matchedEvents);
-        setTotalEvents(data.summary.matchedEvents);
-      } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
-          setEventsError('Failed to load event summary.');
-          setEventSummary(null);
-          setRangeMatchedEvents(null);
-        }
-      } finally {
-        setIsLoadingEvents(false);
-      }
-    }
-
-    fetchEvents();
-    return () => controller.abort();
-  }, [currentStation, currentBasin]);
+    setPeakStartDate(minPeakDate);
+    setPeakEndDate(maxPeakDate);
+  }, [activeTabKey, minPeakDate, maxPeakDate]);
 
   useEffect(() => {
-    const minDate = toDateOnly(eventSummary?.minPeakTime ?? null);
-    const maxDate = toDateOnly(eventSummary?.maxPeakTime ?? null);
-    if (!minDate || !maxDate) {
-      return;
+    if (!activeTabKey) {
+      setDownloadError(null);
     }
-    setPeakStartDate(minDate);
-    setPeakEndDate(maxDate);
-  }, [eventSummary?.minPeakTime, eventSummary?.maxPeakTime]);
-
-  const minPeakDate = toDateOnly(eventSummary?.minPeakTime ?? null);
-  const maxPeakDate = toDateOnly(eventSummary?.maxPeakTime ?? null);
-  const rangeStartDate = peakStartDate || minPeakDate;
-  const rangeEndDate = peakEndDate || maxPeakDate;
-
-  useEffect(() => {
-    if ((!currentStation && !currentBasin) || !rangeStartDate || !rangeEndDate) {
-      return;
-    }
-
-    const controller = new AbortController();
-    const timer = window.setTimeout(async () => {
-      try {
-        setIsLoadingRangeCount(true);
-        const query = new URLSearchParams({
-          includeRecent: '0',
-          peakStart: rangeStartDate,
-          peakEnd: rangeEndDate,
-        });
-        if (selectedPreset) {
-          query.set('includeMatchedSeries', '1');
-        }
-
-        const url = currentStation
-          ? `/api/stations/${currentStation.station_id}/events?${query.toString()}`
-          : `/api/basins/${encodeURIComponent(currentBasin!)}/events?${query.toString()}`;
-
-        const res = await fetch(url, { signal: controller.signal });
-
-        if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`);
-        }
-        const data = (await res.json()) as StationEventsApiResponse;
-        setEventSummary(data.summary);
-        setRangeMatchedEvents(data.summary.matchedEvents);
-        setMatchedSeries(data.matchedSeries ?? []);
-      } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
-          setRangeMatchedEvents(null);
-          setMatchedSeries([]);
-        }
-      } finally {
-        setIsLoadingRangeCount(false);
-      }
-    }, 220);
-
-    return () => {
-      controller.abort();
-      window.clearTimeout(timer);
-    };
-  }, [currentStation, currentBasin, rangeStartDate, rangeEndDate, selectedPreset]);
+  }, [activeTabKey]);
 
   function renderEventsAnalysis() {
     async function handleCopyMetrics() {
@@ -490,7 +423,12 @@ export default function StationSidePanel({
       <>
         <div className={styles.stationSideDivider} />
         {isLoadingEvents && <p>Loading event summary...</p>}
-        {eventsError && <p>{eventsError}</p>}
+        {(downloadError || summaryError || rangeError) && (
+          <p>
+            {downloadError ??
+              (summaryError ? 'Failed to load event summary.' : 'Failed to load data.')}
+          </p>
+        )}
         {eventSummary && (
           <>
             {minPeakDate && maxPeakDate && (

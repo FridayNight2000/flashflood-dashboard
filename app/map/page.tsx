@@ -1,17 +1,17 @@
-'use client';
+import type { Metadata } from 'next';
 
-import dynamic from 'next/dynamic';
+import MapPageClient from './MapPageClient';
 import styles from './page.module.css';
 
-const LeafletMap = dynamic(() => import('./LeafletMap'), {
-  ssr: false,
-  loading: () => <p>Loading map...</p>,
-});
+export const metadata: Metadata = {
+  title: 'Map | Flash-Flood Database',
+  description: 'Interactive station and basin map for flash-flood events in Japan.',
+};
 
 export default function MapPage() {
   return (
     <main className={styles.map}>
-      <LeafletMap />
+      <MapPageClient />
     </main>
   );
 }

@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent folder
+.agents
+
+# Vercel AI agent skills
+skills-lock.json
