@@ -1,18 +1,21 @@
 'use client';
-//type import
+
+import 'leaflet/dist/leaflet.css';
+
 import type { Map as LeafletMapInstance } from 'leaflet';
 import { latLngBounds } from 'leaflet';
-import { type SyntheticEvent, useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import useSWR from 'swr';
 
-import type { Station, StationsApiResponse } from '../types/index';
-import { MapInstanceWatcher, ZoomWatcher } from './components/MapEventWatchers';
-import type { SearchSuggestion, SelectedSearchItem } from './components/MapToolbar';
-//
-import MapToolbar from './components/MapToolbar';
-import StationMarkers from './components/StationMarkers';
-import StationSidePanel from './components/StationSidePanel';
+import { MapInstanceWatcher, ZoomWatcher } from '@/components/map/MapEventWatchers';
+import MapToolbar from '@/components/map/MapToolbar';
+import StationMarkers from '@/components/map/StationMarkers';
+import StationSidePanel from '@/components/map/StationSidePanel';
+import { useMapState } from '@/hooks/useMapState';
+import { useStationSearch } from '@/hooks/useStationSearch';
+import type { Station, StationsApiResponse } from '@/types';
+
 import styles from './LeafletMap.module.css';
 import { normalizeText, stationDisplayName } from './mapUtils';
 
@@ -67,29 +70,15 @@ export default function LeafletMap() {
     revalidateOnFocus: false,
   });
   const error = stationsError ? 'Failed to load stations.' : null;
-  // UI state initialization
-  // Track current map zoom level (initially aligned with MapContainer zoom).
-  const [zoom, setZoom] = useState(5.4);
 
-  // Side panel tab state (Basin + single Station).
   const [basinTab, setBasinTab] = useState<{
     basinName: string;
     stationCount: number;
   } | null>(null);
   const [stationTab, setStationTab] = useState<Station | null>(null);
   const [activeTab, setActiveTab] = useState<'basin' | 'station' | null>(null);
-
-  // Store map instance for post-search navigation.
   const [mapInstance, setMapInstance] = useState<LeafletMapInstance | null>(null);
-  // Search input and helper hint text.
-  const [searchText, setSearchText] = useState('');
-  const [searchHint, setSearchHint] = useState<string>('');
-  const [selectedSearchItem, setSelectedSearchItem] = useState<SelectedSearchItem | null>(null);
-  // Dual map state: selected controls persistent side panel/main highlight; preview controls transient popup/secondary highlight.
-  const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
-  const [previewStationId, setPreviewStationId] = useState<string | null>(null);
 
-  // Group by basin_name for prioritized search matching.
   const basinGroups = useMemo(() => {
     const groups = new Map<string, Station[]>();
     stations.forEach((station) => {
@@ -113,87 +102,6 @@ export default function LeafletMap() {
     [basinGroups],
   );
 
-  // Marker radius scales exponentially with zoom: smaller at low zoom, more visible when zoomed in.
-  const markerRadius = useMemo(() => {
-    const radius = 1.2 * Math.pow(1.35, zoom - 4);
-    return Math.min(10, Math.max(1.2, radius));
-  }, [zoom]);
-
-  // Prefix suggestions for basin_name while typing.
-  const basinSuggestions = useMemo(() => {
-    const keyword = normalizeText(searchText);
-    if (!keyword) {
-      return [];
-    }
-    return basinSearchIndex
-      .filter(({ normalizedName }) => normalizedName.startsWith(keyword))
-      .map(({ name }) => name)
-      .sort((a, b) => a.localeCompare(b))
-      .slice(0, 8);
-  }, [basinSearchIndex, searchText]);
-
-  // Prefix suggestions for station_name while typing.
-  const stationNameSuggestions = useMemo(() => {
-    const keyword = normalizeText(searchText);
-    if (!keyword) {
-      return [];
-    }
-
-    const unique = new Set<string>();
-    stations.forEach((station) => {
-      const name = station.station_name?.trim();
-      if (!name) {
-        return;
-      }
-      if (normalizeText(name).startsWith(keyword)) {
-        unique.add(name);
-      }
-    });
-
-    return Array.from(unique)
-      .sort((a, b) => a.localeCompare(b))
-      .slice(0, 8);
-  }, [stations, searchText]);
-
-  // Merge basin/station suggestions for unified toolbar rendering.
-  const searchSuggestions = useMemo(
-    () => [
-      ...basinSuggestions.map((value) => ({
-        value,
-        type: 'Basin' as const,
-      })),
-      ...stationNameSuggestions.map((value) => ({
-        value,
-        type: 'Station' as const,
-      })),
-    ],
-    [basinSuggestions, stationNameSuggestions],
-  );
-
-  const searchHintText = useMemo(() => {
-    if (searchHint && searchHint !== noMatchHint) {
-      return searchHint;
-    }
-
-    if (!searchText.trim()) {
-      return '';
-    }
-
-    if (searchSuggestions.length > 0) {
-      return '';
-    }
-
-    return noMatchHint;
-  }, [noMatchHint, searchHint, searchSuggestions.length, searchText]);
-
-  const basinHighlightedStationIds = useMemo(() => {
-    if (!basinTab || activeTab !== 'basin') {
-      return [];
-    }
-    const basinStations = basinGroups.get(basinTab.basinName) ?? [];
-    return basinStations.map((station) => station.station_id);
-  }, [activeTab, basinGroups, basinTab]);
-
   const stationSearchIndex = useMemo(
     () =>
       stations.map((station) => ({
@@ -205,16 +113,39 @@ export default function LeafletMap() {
     [stations],
   );
 
-  const commitStationSelection = useCallback(
-    (station: Station) => {
-      setSelectedStationId(station.station_id);
-      setStationTab(station);
-      setPreviewStationId(null);
-      mapInstance?.closePopup();
-      setActiveTab('station');
-    },
-    [mapInstance],
-  );
+  const {
+    zoom,
+    setZoom,
+    selectedStationId,
+    previewStationId,
+    commitStationSelection,
+    clearPreview,
+    handlePreviewChange,
+    handleActivateStationTab,
+    handleCloseStationTab,
+    handleCloseBasinTab,
+  } = useMapState({
+    mapInstance,
+    basinTab,
+    stationTab,
+    activeTab,
+    setBasinTab,
+    setStationTab,
+    setActiveTab,
+  });
+
+  const markerRadius = useMemo(() => {
+    const radius = 1.2 * Math.pow(1.35, zoom - 4);
+    return Math.min(10, Math.max(1.2, radius));
+  }, [zoom]);
+
+  const basinHighlightedStationIds = useMemo(() => {
+    if (!basinTab || activeTab !== 'basin') {
+      return [];
+    }
+    const basinStations = basinGroups.get(basinTab.basinName) ?? [];
+    return basinStations.map((station) => station.station_id);
+  }, [activeTab, basinGroups, basinTab]);
 
   const zoomToStations = useCallback(
     (targetStations: Station[]) => {
@@ -245,105 +176,28 @@ export default function LeafletMap() {
     [mapInstance],
   );
 
-  // Search priority: basin_name -> river_name -> station_name/2/3.
-  const performSearch = useCallback(
-    (rawKeyword: string) => {
-      const keyword = rawKeyword.trim();
-      if (!keyword) {
-        setSelectedSearchItem(null);
-        setPreviewStationId(null);
-        setSearchHint('Please enter a basin / station name.');
-        return false;
-      }
-      if (!mapInstance) {
-        setSelectedSearchItem(null);
-        setPreviewStationId(null);
-        setSearchHint('Map is not ready yet. Please try again shortly.');
-        return false;
-      }
-
-      const normalizedKeyword = normalizeText(keyword);
-      const basin =
-        basinSearchIndex.find(({ normalizedName }) => normalizedName === normalizedKeyword)?.name ??
-        basinSearchIndex.find(({ normalizedName }) => normalizedName.startsWith(normalizedKeyword))
-          ?.name ??
-        basinSearchIndex.find(({ normalizedName }) => normalizedName.includes(normalizedKeyword))
-          ?.name;
-      if (basin) {
-        const matched = basinGroups.get(basin) ?? [];
-        zoomToStations(matched);
-        setSearchHint('');
-        setPreviewStationId(null);
-        setSelectedSearchItem({ label: basin, type: 'Basin' });
-        setBasinTab({
-          basinName: basin,
-          stationCount: matched.length,
-        });
-        setActiveTab('basin');
-        mapInstance.closePopup();
-        return true;
-      }
-
-      const stationMatch = stationSearchIndex.find(({ names }) =>
-        names.some((name) => name === normalizedKeyword || name.includes(normalizedKeyword)),
-      )?.station;
-
-      if (stationMatch) {
-        zoomToStations([stationMatch]);
-        setSearchHint('');
-        setSelectedSearchItem({
-          label: stationMatch.station_name || stationDisplayName(stationMatch),
-          type: 'Station',
-        });
-        commitStationSelection(stationMatch);
-        return true;
-      }
-
-      setSelectedSearchItem(null);
-      setPreviewStationId(null);
-      setSearchHint(noMatchHint);
-      return false;
-    },
-    [
-      basinGroups,
-      basinSearchIndex,
-      mapInstance,
-      noMatchHint,
-      stationSearchIndex,
-      zoomToStations,
-      commitStationSelection,
-    ],
-  );
-
-  // Submit search on Enter.
-  const handleSearchSubmit = useCallback(
-    (event: SyntheticEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      performSearch(searchText);
-    },
-    [performSearch, searchText],
-  );
-
-  // Auto-fill and execute search when selecting a suggestion.
-  const handleSuggestionSelect = useCallback(
-    (item: SearchSuggestion) => {
-      setSearchText(item.value);
-      setSelectedSearchItem({ label: item.value, type: item.type });
-      performSearch(item.value);
-    },
-    [performSearch],
-  );
-
-  const handleSearchTextChange = useCallback(
-    (value: string) => {
-      setSearchText(value);
-      setSelectedSearchItem(null);
-      if (searchHint) {
-        setSearchHint('');
-      }
-    },
-    [searchHint],
-  );
+  const {
+    searchText,
+    searchHintText,
+    searchSuggestions,
+    selectedSearchItem,
+    handleSearchSubmit,
+    handleSuggestionSelect,
+    handleSearchTextChange,
+  } = useStationSearch({
+    stations,
+    basinGroups,
+    basinSearchIndex,
+    stationSearchIndex,
+    mapInstance,
+    zoomToStations,
+    commitStationSelection,
+    clearPreview,
+    setBasinTab,
+    setActiveTab,
+    noMatchHint,
+    getDisplayName: stationDisplayName,
+  });
 
   const handleOpenBasinTab = useCallback(
     (basinName: string) => {
@@ -357,10 +211,10 @@ export default function LeafletMap() {
         stationCount: matched.length,
       });
       setActiveTab('basin');
-      setPreviewStationId(null);
+      clearPreview();
       mapInstance?.closePopup();
     },
-    [basinGroups, mapInstance],
+    [basinGroups, clearPreview, mapInstance],
   );
 
   const handleActivateBasinTab = useCallback(() => {
@@ -369,42 +223,6 @@ export default function LeafletMap() {
     }
     setActiveTab('basin');
   }, [basinTab]);
-
-  const handleActivateStationTab = useCallback(() => {
-    if (!stationTab) {
-      return;
-    }
-    setActiveTab('station');
-    setSelectedStationId(stationTab.station_id);
-  }, [stationTab]);
-
-  const handleCloseStationTab = useCallback(() => {
-    setStationTab(null);
-    setSelectedStationId(null);
-    setPreviewStationId(null);
-    if (basinTab) {
-      setActiveTab('basin');
-    } else {
-      setActiveTab(null);
-    }
-    mapInstance?.closePopup();
-  }, [basinTab, mapInstance]);
-
-  const handleCloseBasinTab = useCallback(() => {
-    const nextStationTab = stationTab;
-    setBasinTab(null);
-    setPreviewStationId(null);
-    if (activeTab === 'basin') {
-      if (nextStationTab) {
-        setActiveTab('station');
-        setSelectedStationId(nextStationTab.station_id);
-      } else {
-        setActiveTab(null);
-        setSelectedStationId(null);
-        mapInstance?.closePopup();
-      }
-    }
-  }, [activeTab, mapInstance, stationTab]);
 
   return (
     <div className={styles.mapShell}>
@@ -431,9 +249,7 @@ export default function LeafletMap() {
         className={styles.leafletCanvas}
         attributionControl={false}
       >
-        {/* Watch zoom changes to drive marker radius updates. */}
         <ZoomWatcher onZoomChange={setZoom} />
-        {/* Expose map instance to enable automatic post-search navigation. */}
         <MapInstanceWatcher onMapReady={setMapInstance} />
         <ZoomControl position="bottomright" />
         <AttributionControl position="bottomleft" />
@@ -450,7 +266,7 @@ export default function LeafletMap() {
           selectedStationId={selectedStationId}
           previewStationId={previewStationId}
           basinHighlightedStationIds={basinHighlightedStationIds}
-          onPreviewChange={setPreviewStationId}
+          onPreviewChange={handlePreviewChange}
           onCommitSelection={commitStationSelection}
           getDisplayName={stationDisplayName}
         />

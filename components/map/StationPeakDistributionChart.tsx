@@ -2,51 +2,40 @@
 
 import { forwardRef, useMemo } from 'react';
 
-import type { StationMatchedPoint } from '../../types/index';
+import type { PeakDistributionPoint } from '@/app/map/types';
 
-type StationEventTimelineChartProps = {
-  points: StationMatchedPoint[];
+type StationPeakDistributionChartProps = {
+  points: PeakDistributionPoint[];
   title?: string;
   width?: number;
   height?: number;
 };
 
 type ChartPoint = {
-  key: string;
   x: number;
   y: number;
-  label: string;
-  value: number;
+  rank: number;
+  peak_value: number;
 };
 
 const chartMargin = { top: 30, right: 24, bottom: 42, left: 52 };
 
-function formatAxisValue(value: number): string {
+function formatValue(value: number): string {
   return Number.isFinite(value) ? value.toFixed(2) : '-';
 }
 
-function formatDateTick(ts: number): string {
-  const date = new Date(ts);
-  const y = date.getFullYear();
-  const m = `${date.getMonth() + 1}`.padStart(2, '0');
-  const d = `${date.getDate()}`.padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimelineChartProps>(
-  function StationEventTimelineChart(
-    { points, title = 'Event timeline', width = 640, height = 260 },
+const StationPeakDistributionChart = forwardRef<SVGSVGElement, StationPeakDistributionChartProps>(
+  function StationPeakDistributionChart(
+    { points, title = 'Peak distribution', width = 640, height = 260 },
     ref,
   ) {
     const plotWidth = width - chartMargin.left - chartMargin.right;
     const plotHeight = height - chartMargin.top - chartMargin.bottom;
-    const safePoints = points.filter(
-      (point) => Number.isFinite(Date.parse(point.peak_time)) && Number.isFinite(point.peak_value),
-    );
 
     const chartData = useMemo(() => {
-      if (safePoints.length === 0) {
+      if (points.length === 0) {
         return {
+          linePath: '',
           points: [] as ChartPoint[],
           xTicks: [] as {
             x: number;
@@ -57,29 +46,27 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
         };
       }
 
-      const timestamps = safePoints.map((item) => Date.parse(item.peak_time));
-      const values = safePoints.map((item) => item.peak_value);
-
-      const minTs = Math.min(...timestamps);
-      const maxTs = Math.max(...timestamps);
+      const sorted = [...points].sort((a, b) => a.rank - b.rank);
+      const maxRank = Math.max(1, sorted[sorted.length - 1].rank);
+      const values = sorted.map((item) => item.peak_value);
       const minValue = Math.min(...values);
       const maxValue = Math.max(...values);
-
-      const xSpan = Math.max(1, maxTs - minTs);
       const ySpan = Math.max(0.0001, maxValue - minValue);
 
-      const mappedPoints = safePoints.map((item, idx) => {
-        const ts = Date.parse(item.peak_time);
-        const normalizedX = (ts - minTs) / xSpan;
-        const normalizedY = (item.peak_value - minValue) / ySpan;
+      const mappedPoints = sorted.map((item) => {
+        const xRatio = maxRank === 1 ? 0 : (item.rank - 1) / (maxRank - 1);
+        const yRatio = (item.peak_value - minValue) / ySpan;
         return {
-          key: `${item.id}-${idx}`,
-          x: chartMargin.left + normalizedX * plotWidth,
-          y: chartMargin.top + (1 - normalizedY) * plotHeight,
-          label: item.peak_time_str ?? item.peak_time,
-          value: item.peak_value,
+          x: chartMargin.left + xRatio * plotWidth,
+          y: chartMargin.top + (1 - yRatio) * plotHeight,
+          rank: item.rank,
+          peak_value: item.peak_value,
         };
       });
+
+      const linePath = mappedPoints
+        .map((point, idx) => `${idx === 0 ? 'M' : 'L'}${point.x},${point.y}`)
+        .join(' ');
 
       const xTicks: Array<{
         x: number;
@@ -87,29 +74,30 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
         align: 'start' | 'middle' | 'end';
       }> = Array.from({ length: 5 }).map((_, idx) => {
         const ratio = idx / 4;
-        const ts = minTs + ratio * xSpan;
+        const rank = Math.round(1 + ratio * (maxRank - 1));
         return {
           x: chartMargin.left + ratio * plotWidth,
-          label: formatDateTick(ts),
+          label: `${rank}`,
           align: idx === 0 ? 'start' : idx === 4 ? 'end' : 'middle',
         };
       });
 
       const yTicks = Array.from({ length: 5 }).map((_, idx) => {
         const ratio = idx / 4;
-        const value = minValue + (1 - ratio) * ySpan;
+        const value = maxValue - ratio * ySpan;
         return {
           y: chartMargin.top + ratio * plotHeight,
-          label: formatAxisValue(value),
+          label: formatValue(value),
         };
       });
 
       return {
+        linePath,
         points: mappedPoints,
         xTicks,
         yTicks,
       };
-    }, [safePoints, plotHeight, plotWidth]);
+    }, [plotHeight, plotWidth, points]);
 
     return (
       <svg
@@ -205,16 +193,26 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
           </g>
         ))}
 
+        {chartData.linePath && (
+          <path
+            d={chartData.linePath}
+            fill="none"
+            stroke="#0f766e"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        )}
+
         {chartData.points.map((point) => (
           <circle
-            key={point.key}
+            key={point.rank}
             cx={point.x}
             cy={point.y}
-            r={3}
+            r="2"
             fill="#0f766e"
-            opacity="0.9"
           >
-            <title>{`${point.label} | ${point.value.toFixed(2)}`}</title>
+            <title>{`rank ${point.rank} | ${formatValue(point.peak_value)}`}</title>
           </circle>
         ))}
 
@@ -225,7 +223,7 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
           fontSize="11"
           fill="#334155"
         >
-          peak_time
+          rank
         </text>
         <text
           x={13}
@@ -242,4 +240,4 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
   },
 );
 
-export default StationEventTimelineChart;
+export default StationPeakDistributionChart;

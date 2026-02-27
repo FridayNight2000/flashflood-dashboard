@@ -1,22 +1,5 @@
-export type RootLayoutProps = Readonly<{
-  children: React.ReactNode;
-}>;
+import type { Station } from './entities';
 
-// Station type corresponding to fields returned by /api/stations.
-export type Station = {
-  station_id: string;
-  latitude: number | null;
-  longitude: number | null;
-  basin_name: string | null;
-  river_name: string | null;
-  station_name: string | null;
-  station_name2?: string | null;
-  station_name3?: string | null;
-  description?: string | null;
-  has_data: number;
-};
-
-// API response type used for paginated station loading.
 export type StationsApiResponse = {
   items: Station[];
   pagination: {
@@ -27,7 +10,6 @@ export type StationsApiResponse = {
   };
 };
 
-// Aggregated event summary for a single station (used by side panel).
 export type StationEventSummary = {
   totalEvents: number;
   matchedEvents: number;
@@ -41,7 +23,6 @@ export type StationEventSummary = {
   avgFallTime: number | null;
 };
 
-// Recent events for a single station (used by side panel).
 export type StationRecentEvent = {
   id: number;
   station_id?: string | null;
@@ -64,7 +45,6 @@ export type StationMatchedPoint = {
   peak_time_str: string | null;
 };
 
-// API response type for single-station event aggregation.
 export type StationEventsApiResponse = {
   stationId?: string;
   basinName?: string;
@@ -74,7 +54,6 @@ export type StationEventsApiResponse = {
   matchedEventsDetail?: StationRecentEvent[];
 };
 
-// Lightweight count response for date-range filtering.
 export type StationEventsCountResponse = {
   stationId?: string;
   basinName?: string;

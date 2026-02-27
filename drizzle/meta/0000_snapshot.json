@@ -1,0 +1,242 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": "",
+  "version": "6",
+  "dialect": "sqlite",
+  "tables": {
+    "stations": {
+      "name": "stations",
+      "columns": {
+        "station_id": {
+          "autoincrement": false,
+          "name": "station_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": false
+        },
+        "latitude": {
+          "autoincrement": false,
+          "name": "latitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "autoincrement": false,
+          "name": "longitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "basin_name": {
+          "autoincrement": false,
+          "name": "basin_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "river_name": {
+          "autoincrement": false,
+          "name": "river_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name": {
+          "autoincrement": false,
+          "name": "station_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name2": {
+          "autoincrement": false,
+          "name": "station_name2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name3": {
+          "autoincrement": false,
+          "name": "station_name3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "autoincrement": false,
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_data": {
+          "default": 0,
+          "autoincrement": false,
+          "name": "has_data",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {
+        "idx_stations_has_data": {
+          "name": "idx_stations_has_data",
+          "columns": [
+            "has_data"
+          ],
+          "isUnique": false
+        },
+        "idx_stations_basin": {
+          "name": "idx_stations_basin",
+          "columns": [
+            "basin_name"
+          ],
+          "isUnique": false
+        },
+        "idx_stations_river": {
+          "name": "idx_stations_river",
+          "columns": [
+            "river_name"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "station_records": {
+      "name": "station_records",
+      "columns": {
+        "id": {
+          "autoincrement": true,
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": false
+        },
+        "station_id": {
+          "autoincrement": false,
+          "name": "station_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_time": {
+          "autoincrement": false,
+          "name": "start_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "peak_time": {
+          "autoincrement": false,
+          "name": "peak_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_time": {
+          "autoincrement": false,
+          "name": "end_time",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_value": {
+          "autoincrement": false,
+          "name": "start_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "peak_value": {
+          "autoincrement": false,
+          "name": "peak_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "end_value": {
+          "autoincrement": false,
+          "name": "end_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rise_time": {
+          "autoincrement": false,
+          "name": "rise_time",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fall_time": {
+          "autoincrement": false,
+          "name": "fall_time",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "peak_time_str": {
+          "autoincrement": false,
+          "name": "peak_time_str",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "compositePrimaryKeys": {},
+      "indexes": {
+        "idx_records_peak_value": {
+          "name": "idx_records_peak_value",
+          "columns": [
+            "peak_value"
+          ],
+          "isUnique": false
+        },
+        "idx_records_station_time": {
+          "name": "idx_records_station_time",
+          "columns": [
+            "station_id",
+            "peak_time"
+          ],
+          "isUnique": false
+        },
+        "idx_records_peak_time": {
+          "name": "idx_records_peak_time",
+          "columns": [
+            "peak_time"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "station_records_station_id_stations_station_id_fk": {
+          "name": "station_records_station_id_stations_station_id_fk",
+          "tableFrom": "station_records",
+          "tableTo": "stations",
+          "columnsFrom": [
+            "station_id"
+          ],
+          "columnsTo": [
+            "station_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

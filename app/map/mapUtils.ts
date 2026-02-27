@@ -1,4 +1,4 @@
-import type { Station } from "../types/index";
+import type { Station } from '@/types';
 
 export function normalizeText(value: string | null | undefined): string {
   return (value ?? "").trim().toLowerCase();

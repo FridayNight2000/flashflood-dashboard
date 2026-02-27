@@ -1,12 +1,11 @@
 import './globals.css';
-import 'leaflet/dist/leaflet.css';
 
 import { GeistMono } from 'geist/font/mono';
 import { GeistPixelSquare } from 'geist/font/pixel';
 import { GeistSans } from 'geist/font/sans';
 import type { Metadata } from 'next';
 
-import type { RootLayoutProps } from './types';
+import type { RootLayoutProps } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Flashflood Demo',

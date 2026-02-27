@@ -2,17 +2,9 @@
 
 import { type SyntheticEvent, useRef, useState } from 'react';
 
+import type { SearchSuggestion, SelectedSearchItem } from '@/app/map/types';
+
 import styles from './MapToolbar.module.css';
-
-export type SearchSuggestion = {
-  value: string;
-  type: 'Basin' | 'Station';
-};
-
-export type SelectedSearchItem = {
-  label: string;
-  type: 'Basin' | 'Station';
-};
 
 type MapToolbarProps = {
   isLoading: boolean;

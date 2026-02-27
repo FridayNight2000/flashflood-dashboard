@@ -3,7 +3,8 @@
 import { memo, useMemo } from 'react';
 import { CircleMarker, Pane, Popup } from 'react-leaflet';
 
-import type { Station } from '../../types/index';
+import type { Station } from '@/types';
+
 import styles from './StationMarkers.module.css';
 
 type StationMarkersProps = {
