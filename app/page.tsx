@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import styles from './page.module.css';
+import PasswordForm from './PasswordForm';
 
 export const metadata: Metadata = {
   title: 'Flash-Flood Database in Japan',
@@ -10,16 +10,16 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main className={styles.hero}>
-      <h1>
-        <span>Flash-Flood Database</span> in JAPAN
-      </h1>
-      <Link
-        href="/map"
-        className={styles.cta}
-      >
-        Explore
-      </Link>
-    </main>
+    <div className={styles.homePage}>
+      <div className={styles.homeInner}>
+        {/* 3. LOGO */}
+        <div className={styles.homeHeader}>
+          <div className={styles.homeLogo}>FLASH-FLOOD</div>
+          <div className={styles.homeTagline}>JAPAN DATABASE · 2002 - 2023</div>
+        </div>
+        {/* 4. Password Input */}
+        <PasswordForm />
+      </div>
+    </div>
   );
 }

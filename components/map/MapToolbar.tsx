@@ -36,8 +36,7 @@ export default function MapToolbar({
     ? 'Loading stations...'
     : error
       ? 'Stations unavailable'
-      : 'Search by basin / station';
-
+      : 'Basin or station…';
   const displayValue = isInputFocused
     ? searchText
     : selectedItem

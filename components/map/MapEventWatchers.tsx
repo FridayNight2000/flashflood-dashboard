@@ -30,3 +30,34 @@ export function MapInstanceWatcher({ onMapReady }: MapInstanceWatcherProps) {
 
   return null;
 }
+
+export function MapSizeWatcher() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    let frameId = 0;
+
+    const syncSize = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        map.invalidateSize();
+      });
+    };
+
+    syncSize();
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncSize();
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}

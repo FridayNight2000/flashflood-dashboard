@@ -1,0 +1,228 @@
+/* ── Page background ── */
+.pageBg {
+  min-height: 100vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/linar.jpeg');
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── Shell (plastic housing) ── */
+.shell {
+  width: var(--shell-width, 820px);
+  max-width: 98vw;
+
+  background: linear-gradient(160deg, #2e2e2e 0%, #1c1c1c 40%, #111 100%);
+  border-radius: 28px 28px 20px 20px;
+  padding: 50px 32px 32px;
+
+  box-shadow:
+    0 0 0 3px #3a3a3a,
+    0 0 0 6px #222,
+    0 8px 80px rgba(0, 0, 0, 0.95),
+    inset 0 2px 4px rgba(255, 255, 255, 0.07);
+
+  position: relative;
+}
+
+/* ── Top Bar Container ── */
+.shellTopBar {
+  position: absolute;
+  top: 18px;
+  left: 36px;
+  right: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.shellTopBarCenter {
+  justify-content: center;
+}
+
+/* ── Shell navigation (top buttons) ── */
+.shellNav {
+  display: flex;
+  gap: 20px;
+}
+
+.navBtn {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: #777;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 1px 1px rgba(0, 0, 0, 0.8);
+  border: 1px solid #111;
+  border-top-color: #333;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.navIndicator {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.navBtnActive {
+  color: #eee;
+}
+
+.navBtnActive .navIndicator {
+  background-color: var(--phosphor, #00ff41);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    0 0 8px var(--phosphor, #00ff41);
+}
+
+.navBtn:hover {
+  color: #aaa;
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+}
+
+.navBtn:active {
+  color: #888;
+  background: linear-gradient(180deg, #151515 0%, #111 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 0 rgba(0, 0, 0, 0);
+  border-top-color: #000;
+  transform: translateY(1px);
+}
+
+/* ── Brand plate (homepage) ── */
+.brandTitle {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  color: #444;
+  letter-spacing: 5px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ── Expanded variant ── */
+.expanded {
+  --shell-width: min(1320px, 97vw);
+  padding: 52px 28px 28px 28px;
+}
+
+.expanded .screen {
+  --screen-height: min(82vh, 760px);
+}
+
+/* ── Bezel ── */
+.bezel {
+  background: #000;
+  border-radius: 14px;
+  padding: 5px;
+
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    inset 0 3px 8px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(0, 255, 65, 0.04);
+}
+
+/* ── Screen ── */
+.screen {
+  background: var(--bg-screen, #000);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  height: var(--screen-height, 520px);
+
+  box-shadow: inset 0 0 80px rgba(0, 255, 65, 0.03);
+}
+
+/* ── Glass highlight overlay (screen ::after) ── */
+.screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 65% 35% at 50% 12%,
+    rgba(255, 255, 255, 0.022) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+  z-index: 201;
+  border-radius: 10px;
+}
+
+/* ── Content area ── */
+.content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Animations — only when user allows motion
+   ============================================================ */
+
+@keyframes powerOn {
+  0% {
+    opacity: 0.05;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  14% {
+    opacity: 0.6;
+  }
+  20% {
+    opacity: 1;
+  }
+}
+
+@keyframes ledBlink {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .shell {
+    transition:
+      width 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+      padding 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .screen {
+    transition: height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: powerOn 0.5s ease-out forwards;
+  }
+
+  .shell::after {
+    animation: ledBlink 4s ease-in-out infinite;
+  }
+}

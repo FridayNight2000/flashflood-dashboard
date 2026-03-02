@@ -1,33 +1,33 @@
 .mapToolbar {
   position: absolute;
-  top: 1rem;
-  left: 15%;
-  transform: translateX(-50%);
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 1000;
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
-  border: 1px solid #cfd4da;
-  border-radius: 12px;
+  width: min(200px, calc(100vw - 1.5rem));
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   background: #ffffff;
-  width: 25%;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.mapToolbar:focus-within {
+  border-color: #cbd5e1;
 }
 
 .mapInput {
-  width: min(520px, 80vw);
-  padding: 0.7rem 0.9rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
   border: 0;
-  border-radius: 0;
+  border-radius: 10px;
   font-size: 1rem;
+  font-family: inherit;
   outline: none;
   background: transparent;
-  background-clip: padding-box;
 }
 
 .mapInputMuted {
   color: #6b7280;
-}
-
-.mapInput:focus {
-  border-color: #6c757d;
 }
 
 .mapSuggestions {
@@ -46,6 +46,7 @@
   background: #ffffff;
   padding: 0.45rem 0.6rem;
   cursor: pointer;
+  font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: space-between;

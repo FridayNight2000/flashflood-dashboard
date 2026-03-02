@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import useSWR from 'swr';
 
-import { MapInstanceWatcher, ZoomWatcher } from '@/components/map/MapEventWatchers';
+import { MapInstanceWatcher, MapSizeWatcher, ZoomWatcher } from '@/components/map/MapEventWatchers';
 import MapToolbar from '@/components/map/MapToolbar';
 import StationMarkers from '@/components/map/StationMarkers';
 import StationSidePanel from '@/components/map/StationSidePanel';
@@ -61,7 +61,7 @@ async function fetchAllStations(): Promise<Station[]> {
 }
 
 export default function LeafletMap() {
-  const noMatchHint = 'No results matched. Try a more complete name.';
+  const noMatchHint = 'No results matched';
   const {
     data: stations = [],
     error: stationsError,
@@ -249,6 +249,7 @@ export default function LeafletMap() {
         className={styles.leafletCanvas}
         attributionControl={false}
       >
+        <MapSizeWatcher />
         <ZoomWatcher onZoomChange={setZoom} />
         <MapInstanceWatcher onMapReady={setMapInstance} />
         <ZoomControl position="bottomright" />
