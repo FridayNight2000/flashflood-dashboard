@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { parseBoolean, parseDateOnly } from '../../../../../lib/apiUtils';
 import {
   queryStationFilteredSummary,
   queryStationMatchedEvents,
@@ -22,21 +23,6 @@ function parseLimit(value: string | null): number {
   }
 
   return Math.min(parsed, 100);
-}
-
-function parseBoolean(value: string | null, fallback: boolean): boolean {
-  if (value === null) {
-    return fallback;
-  }
-  return value === '1' || value.toLowerCase() === 'true';
-}
-
-function parseDateOnly(value: string | null): string | null {
-  if (!value) {
-    return null;
-  }
-  const trimmed = value.trim();
-  return /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? trimmed : null;
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ stationId: string }> }) {
@@ -87,19 +73,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ station
       });
     }
 
-    const summary = await queryStationSummary(cleanStationId);
+    const [summary, recentEvents, matchedSeries, matchedEventsDetail] = await Promise.all([
+      queryStationSummary(cleanStationId),
+      includeRecent ? queryStationRecentEvents(cleanStationId, limit) : Promise.resolve([]),
+      includeMatchedSeries ? queryStationMatchedSeries(filter) : Promise.resolve(undefined),
+      includeMatchedEvents ? queryStationMatchedEvents(filter) : Promise.resolve(undefined),
+    ]);
     const totalEvents = summary.totalEvents ?? 0;
-
-    const recentEvents = includeRecent ? await queryStationRecentEvents(cleanStationId, limit) : [];
-    let matchedSeries: Awaited<ReturnType<typeof queryStationMatchedSeries>> | undefined;
-    if (includeMatchedSeries) {
-      matchedSeries = await queryStationMatchedSeries(filter);
-    }
-
-    let matchedEventsDetail: Awaited<ReturnType<typeof queryStationMatchedEvents>> | undefined;
-    if (includeMatchedEvents) {
-      matchedEventsDetail = await queryStationMatchedEvents(filter);
-    }
 
     return NextResponse.json({
       stationId: cleanStationId,
@@ -120,11 +100,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ station
       matchedEventsDetail,
     });
   } catch (error) {
+    console.error('[GET /api/stations/[stationId]/events]', error);
     return NextResponse.json(
-      {
-        error: 'Failed to query station events.',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to query station events.' },
       { status: 500 },
     );
   }

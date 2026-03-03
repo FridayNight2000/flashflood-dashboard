@@ -60,6 +60,8 @@ export async function queryFilteredSummary(filter: EventFilter) {
   return row;
 }
 
+const MAX_MATCHED_ROWS = 10000;
+
 export async function queryMatchedSeries(filter: EventFilter) {
   return db
     .select({
@@ -77,7 +79,8 @@ export async function queryMatchedSeries(filter: EventFilter) {
         isNotNull(stationRecords.peak_value),
       ),
     )
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(MAX_MATCHED_ROWS);
 }
 
 export async function queryMatchedEvents(filter: EventFilter) {
@@ -99,7 +102,8 @@ export async function queryMatchedEvents(filter: EventFilter) {
     .from(stationRecords)
     .innerJoin(stations, eq(stationRecords.station_id, stations.station_id))
     .where(basinJoinWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(MAX_MATCHED_ROWS);
 }
 
 export async function queryStationSummary(stationId: string) {
@@ -146,7 +150,8 @@ export async function queryStationMatchedSeries(filter: StationEventFilter) {
         isNotNull(stationRecords.peak_value),
       ),
     )
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(MAX_MATCHED_ROWS);
 }
 
 export async function queryStationRecentEvents(stationId: string, limit: number) {
@@ -186,5 +191,6 @@ export async function queryStationMatchedEvents(filter: StationEventFilter) {
     })
     .from(stationRecords)
     .where(stationWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(MAX_MATCHED_ROWS);
 }

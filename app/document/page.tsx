@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 
 export default function DocumentPage() {
-  // 当用户访问默认的 /document 路由时，自动重定向到 /document/intro
+  // When the user visits the default /document route, automatically redirect to /document/intro
   redirect('/document/intro');
 }

@@ -25,10 +25,13 @@ const japanBounds: [[number, number], [number, number]] = [
   [46.5, 154.0],
 ];
 
-async function fetchAllStations(): Promise<Station[]> {
+async function fetchAllStations(
+  _key: string,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<Station[]> {
   const merged: Station[] = [];
 
-  const firstRes = await fetch('/api/stations?page=1&pageSize=1000&hasData=1');
+  const firstRes = await fetch('/api/stations?page=1&pageSize=1000&hasData=1', { signal });
   if (!firstRes.ok) {
     throw new Error(`Request failed with status ${firstRes.status}`);
   }
@@ -40,7 +43,9 @@ async function fetchAllStations(): Promise<Station[]> {
   if (totalPages > 1) {
     const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
     const remainingResponses = await Promise.all(
-      remainingPages.map((page) => fetch(`/api/stations?page=${page}&pageSize=1000&hasData=1`)),
+      remainingPages.map((page) =>
+        fetch(`/api/stations?page=${page}&pageSize=1000&hasData=1`, { signal }),
+      ),
     );
 
     const remainingPagesData = await Promise.all(
@@ -66,9 +71,13 @@ export default function LeafletMap() {
     data: stations = [],
     error: stationsError,
     isLoading,
-  } = useSWR('stations:all', fetchAllStations, {
-    revalidateOnFocus: false,
-  });
+  } = useSWR(
+    'stations:all',
+    (key: string, { signal }: { signal: AbortSignal }) => fetchAllStations(key, { signal }),
+    {
+      revalidateOnFocus: false,
+    },
+  );
   const error = stationsError ? 'Failed to load stations.' : null;
 
   const [basinTab, setBasinTab] = useState<{

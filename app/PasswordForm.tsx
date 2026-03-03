@@ -14,7 +14,7 @@ export default function PasswordForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 简单的密码验证
+    // Simple password verification
     if (password === 'Watersource2026') {
       setError(false);
       router.push('/map');

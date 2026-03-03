@@ -23,11 +23,9 @@ export async function GET(req: NextRequest) {
     const result = await queryStations({ q, hasData, page, pageSize });
     return NextResponse.json(result);
   } catch (error) {
+    console.error('[GET /api/stations]', error);
     return NextResponse.json(
-      {
-        error: 'Failed to query stations.',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to query stations.' },
       { status: 500 },
     );
   }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-// 导航配置数组
+// Navigation configuration array
 const navItems = [
   { label: 'Introduction', href: '/document/intro' },
   { label: 'Data Pipeline', href: '/document/datasource' },
@@ -17,7 +17,7 @@ export default function DocSidebar() {
 
   return (
     <aside className="flex w-48 shrink-0 flex-col overflow-y-auto bg-white">
-      {/* 导航列表 */}
+      {/* Navigation List */}
       <nav className="flex-1 px-6 py-13">
         <ul className="flex flex-col items-start gap-0.5">
           {navItems.map((item) => {

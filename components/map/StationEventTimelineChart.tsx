@@ -21,6 +21,18 @@ type ChartPoint = {
 
 const chartMargin = { top: 30, right: 24, bottom: 42, left: 52 };
 
+function safeMin(arr: number[]): number {
+  let min = Infinity;
+  for (const v of arr) if (v < min) min = v;
+  return min;
+}
+
+function safeMax(arr: number[]): number {
+  let max = -Infinity;
+  for (const v of arr) if (v > max) max = v;
+  return max;
+}
+
 function formatAxisValue(value: number): string {
   return Number.isFinite(value) ? value.toFixed(2) : '-';
 }
@@ -40,11 +52,13 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
   ) {
     const plotWidth = width - chartMargin.left - chartMargin.right;
     const plotHeight = height - chartMargin.top - chartMargin.bottom;
-    const safePoints = points.filter(
-      (point) => Number.isFinite(Date.parse(point.peak_time)) && Number.isFinite(point.peak_value),
-    );
 
     const chartData = useMemo(() => {
+      const safePoints = points.filter(
+        (point) =>
+          Number.isFinite(Date.parse(point.peak_time)) && Number.isFinite(point.peak_value),
+      );
+
       if (safePoints.length === 0) {
         return {
           points: [] as ChartPoint[],
@@ -60,10 +74,10 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
       const timestamps = safePoints.map((item) => Date.parse(item.peak_time));
       const values = safePoints.map((item) => item.peak_value);
 
-      const minTs = Math.min(...timestamps);
-      const maxTs = Math.max(...timestamps);
-      const minValue = Math.min(...values);
-      const maxValue = Math.max(...values);
+      const minTs = safeMin(timestamps);
+      const maxTs = safeMax(timestamps);
+      const minValue = safeMin(values);
+      const maxValue = safeMax(values);
 
       const xSpan = Math.max(1, maxTs - minTs);
       const ySpan = Math.max(0.0001, maxValue - minValue);
@@ -109,7 +123,7 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
         xTicks,
         yTicks,
       };
-    }, [safePoints, plotHeight, plotWidth]);
+    }, [points, plotHeight, plotWidth]);
 
     return (
       <svg

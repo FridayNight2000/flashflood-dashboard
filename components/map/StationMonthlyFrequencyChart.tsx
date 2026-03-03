@@ -13,6 +13,12 @@ type StationMonthlyFrequencyChartProps = {
 
 const chartMargin = { top: 30, right: 24, bottom: 42, left: 44 };
 
+function safeMax(arr: number[]): number {
+  let max = -Infinity;
+  for (const v of arr) if (v > max) max = v;
+  return max;
+}
+
 const StationMonthlyFrequencyChart = forwardRef<SVGSVGElement, StationMonthlyFrequencyChartProps>(
   function StationMonthlyFrequencyChart(
     { points, title = 'Seasonality frequency', width = 640, height = 260 },
@@ -26,7 +32,7 @@ const StationMonthlyFrequencyChart = forwardRef<SVGSVGElement, StationMonthlyFre
         .filter((item) => item.month >= 1 && item.month <= 12)
         .sort((a, b) => a.month - b.month);
 
-      const maxCount = Math.max(1, ...safePoints.map((item) => item.count));
+      const maxCount = Math.max(1, safeMax(safePoints.map((item) => item.count)));
       const barGap = 6;
       const barWidth = (plotWidth - barGap * 11) / 12;
 

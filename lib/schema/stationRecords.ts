@@ -6,7 +6,7 @@ export const stationRecords = pgTable(
   'station_records',
   {
     id: serial('id').primaryKey(),
-    station_id: text('station_id').references(() => stations.station_id),
+    station_id: text('station_id').notNull().references(() => stations.station_id),
     start_time: text('start_time'),
     peak_time: text('peak_time'),
     end_time: text('end_time'),

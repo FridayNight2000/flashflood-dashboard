@@ -1,9 +1,9 @@
 import { index, integer, pgTable, real, text } from 'drizzle-orm/pg-core';
 
 export const stations = pgTable(
-  'stations',
+  'stations', //table name
   {
-    station_id: text('station_id').primaryKey(),
+    station_id: text('station_id').primaryKey(), //primary key
     latitude: real('latitude'),
     longitude: real('longitude'),
     basin_name: text('basin_name'),
@@ -13,10 +13,6 @@ export const stations = pgTable(
     station_name3: text('station_name3'),
     description: text('description'),
     has_data: integer('has_data').default(0),
-  },
-  (table) => [
-    index('idx_stations_has_data').on(table.has_data),
-    index('idx_stations_basin').on(table.basin_name),
-    index('idx_stations_river').on(table.river_name),
-  ],
+  }, //column definitions
+  (table) => [index('idx_stations_basin').on(table.basin_name)], //index definitions for faster table queries
 );

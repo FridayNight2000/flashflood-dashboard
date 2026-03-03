@@ -17,7 +17,8 @@ export async function queryStations(filter: StationFilter) {
   const conditions = [];
 
   if (q) {
-    const kw = `%${q}%`;
+    const escaped = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
+    const kw = `%${escaped}%`;
     conditions.push(
       or(
         like(stations.station_id, kw),

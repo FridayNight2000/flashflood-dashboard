@@ -1,25 +1,13 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { parseBoolean, parseDateOnly } from '../../../../../lib/apiUtils';
 import {
   queryBasinSummary,
   queryFilteredSummary,
   queryMatchedEvents,
   queryMatchedSeries,
 } from '../../../../../lib/queries/events';
-
-export const runtime = 'nodejs';
-
-function parseBoolean(value: string | null, fallback: boolean) {
-  if (value === null) return fallback;
-  return value === '1' || value.toLowerCase() === 'true';
-}
-
-function parseDateOnly(value: string | null) {
-  if (!value) return null;
-  const t = value.trim();
-  return /^\d{4}-\d{2}-\d{2}$/.test(t) ? t : null;
-}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ basinName: string }> }) {
   try {
@@ -49,7 +37,11 @@ export async function GET(req: NextRequest, context: { params: Promise<{ basinNa
       return NextResponse.json({ basinName: cleanBasin, matchedEvents });
     }
 
-    const summary = await queryBasinSummary(cleanBasin);
+    const [summary, matchedSeriesData, matchedEventsData] = await Promise.all([
+      queryBasinSummary(cleanBasin),
+      includeMatchedSeries ? queryMatchedSeries(filter) : Promise.resolve(undefined),
+      includeMatchedEvents ? queryMatchedEvents(filter) : Promise.resolve(undefined),
+    ]);
     const totalEvents = summary.totalEvents ?? 0;
 
     return NextResponse.json({
@@ -67,15 +59,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ basinNa
         avgFallTime: filteredSummary.avgFallTime,
       },
       recentEvents: [],
-      matchedSeries: includeMatchedSeries ? await queryMatchedSeries(filter) : undefined,
-      matchedEventsDetail: includeMatchedEvents ? await queryMatchedEvents(filter) : undefined,
+      matchedSeries: matchedSeriesData,
+      matchedEventsDetail: matchedEventsData,
     });
   } catch (error) {
+    console.error('[GET /api/basins/[basinName]/events]', error);
     return NextResponse.json(
-      {
-        error: 'Failed to query basin events.',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to query basin events.' },
       { status: 500 },
     );
   }

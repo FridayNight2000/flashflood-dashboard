@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap');
 
-/* 1. 全屏容器 */
+/* Fullscreen Container */
 .homePage {
   height: 100%;
   overflow: hidden;
@@ -14,7 +14,7 @@
   align-items: center;
 }
 
-/* 2. 内容柱 */
+/* Content Column */
 .homeInner {
   display: flex;
   flex-direction: column;
@@ -22,7 +22,7 @@
   gap: 50px;
 }
 
-/* 3. LOGO + 副标题 */
+/* LOGO + Subtitle */
 .homeHeader {
   text-align: center;
   display: flex;

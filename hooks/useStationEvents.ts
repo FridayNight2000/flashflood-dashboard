@@ -254,15 +254,9 @@ export function useStationEvents({
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.setAttribute('readonly', '');
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
+      const blob = new Blob([text], { type: 'text/plain' });
+      const clipboardItem = new ClipboardItem({ 'text/plain': blob });
+      await navigator.clipboard.write([clipboardItem]);
     }
 
     setIsMetricsCopied(true);

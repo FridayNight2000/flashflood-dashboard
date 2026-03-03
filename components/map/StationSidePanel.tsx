@@ -115,6 +115,7 @@ export default function StationSidePanel({
                     min={minPeakDate ?? undefined}
                     max={maxPeakDate ?? undefined}
                     value={rangeStartDate ?? ''}
+                    aria-label="Peak start date"
                     onChange={(event) => {
                       setStartDate(event.target.value);
                     }}
@@ -126,6 +127,7 @@ export default function StationSidePanel({
                     min={minPeakDate ?? undefined}
                     max={maxPeakDate ?? undefined}
                     value={rangeEndDate ?? ''}
+                    aria-label="Peak end date"
                     onChange={(event) => {
                       setEndDate(event.target.value);
                     }}
@@ -284,9 +286,11 @@ export default function StationSidePanel({
                   >
                     <button
                       type="button"
+                      id="tab-basin"
                       className={styles.browserTabLabel}
                       role="tab"
                       aria-selected={activeTab === 'basin'}
+                      aria-controls="tabpanel-basin"
                       tabIndex={activeTab === 'basin' ? 0 : -1}
                       onClick={onActivateBasinTab}
                     >
@@ -316,9 +320,11 @@ export default function StationSidePanel({
                   >
                     <button
                       type="button"
+                      id="tab-station"
                       className={styles.browserTabLabel}
                       role="tab"
                       aria-selected={activeTab === 'station'}
+                      aria-controls="tabpanel-station"
                       tabIndex={activeTab === 'station' ? 0 : -1}
                       onClick={onActivateStationTab}
                     >
@@ -344,7 +350,12 @@ export default function StationSidePanel({
             </div>
           </div>
 
-          <div className={styles.stationSidePanelBody}>
+          <div
+            className={styles.stationSidePanelBody}
+            role="tabpanel"
+            id={activeTab === 'basin' ? 'tabpanel-basin' : 'tabpanel-station'}
+            aria-labelledby={activeTab === 'basin' ? 'tab-basin' : 'tab-station'}
+          >
             <div className={styles.contentSplit}>
               {currentStation ? (
                 <section className={styles.infoColumn}>

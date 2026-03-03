@@ -20,6 +20,18 @@ type ChartPoint = {
 
 const chartMargin = { top: 30, right: 24, bottom: 42, left: 52 };
 
+function safeMin(arr: number[]): number {
+  let min = Infinity;
+  for (const v of arr) if (v < min) min = v;
+  return min;
+}
+
+function safeMax(arr: number[]): number {
+  let max = -Infinity;
+  for (const v of arr) if (v > max) max = v;
+  return max;
+}
+
 function formatValue(value: number): string {
   return Number.isFinite(value) ? value.toFixed(2) : '-';
 }
@@ -49,8 +61,8 @@ const StationPeakDistributionChart = forwardRef<SVGSVGElement, StationPeakDistri
       const sorted = [...points].sort((a, b) => a.rank - b.rank);
       const maxRank = Math.max(1, sorted[sorted.length - 1].rank);
       const values = sorted.map((item) => item.peak_value);
-      const minValue = Math.min(...values);
-      const maxValue = Math.max(...values);
+      const minValue = safeMin(values);
+      const maxValue = safeMax(values);
       const ySpan = Math.max(0.0001, maxValue - minValue);
 
       const mappedPoints = sorted.map((item) => {

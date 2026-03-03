@@ -59,6 +59,7 @@ export default function MapToolbar({
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
           placeholder={placeholder}
+          aria-label="Search by basin or station name"
         />
       </form>
       {/* Search suggestion list: show prefix matches for basin_name + station_name. */}
