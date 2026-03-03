@@ -8,14 +8,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { AttributionControl, MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import useSWR from 'swr';
 
-import { MapInstanceWatcher, MapSizeWatcher, ZoomWatcher } from '@/components/map/MapEventWatchers';
-import MapToolbar from '@/components/map/MapToolbar';
-import StationMarkers from '@/components/map/StationMarkers';
-import StationSidePanel from '@/components/map/StationSidePanel';
 import { useMapState } from '@/hooks/useMapState';
 import { useStationSearch } from '@/hooks/useStationSearch';
 import type { Station, StationsApiResponse } from '@/types';
 
+import { MapInstanceWatcher, MapSizeWatcher, ZoomWatcher } from './components/MapEventWatchers';
+import MapToolbar from './components/MapToolbar';
+import StationMarkers from './components/StationMarkers';
+import StationSidePanel from './components/StationSidePanel';
 import styles from './LeafletMap.module.css';
 import { normalizeText, stationDisplayName } from './mapUtils';
 
@@ -40,9 +40,7 @@ async function fetchAllStations(): Promise<Station[]> {
   if (totalPages > 1) {
     const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
     const remainingResponses = await Promise.all(
-      remainingPages.map((page) =>
-        fetch(`/api/stations?page=${page}&pageSize=1000&hasData=1`),
-      ),
+      remainingPages.map((page) => fetch(`/api/stations?page=${page}&pageSize=1000&hasData=1`)),
     );
 
     const remainingPagesData = await Promise.all(

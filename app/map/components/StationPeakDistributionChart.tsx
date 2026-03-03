@@ -2,7 +2,7 @@
 
 import { forwardRef, useMemo } from 'react';
 
-import type { PeakDistributionPoint } from '@/app/map/types';
+import type { PeakDistributionPoint } from '../types';
 
 type StationPeakDistributionChartProps = {
   points: PeakDistributionPoint[];

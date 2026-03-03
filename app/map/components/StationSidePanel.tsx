@@ -1,10 +1,10 @@
 'use client';
 
-import type { ActiveTab, BasinTabData } from '@/app/map/types';
 import { useCsvExport } from '@/hooks/useCsvExport';
 import { chartPresets, useStationEvents } from '@/hooks/useStationEvents';
 import type { Station } from '@/types';
 
+import type { ActiveTab, BasinTabData } from '../types';
 import StationEventTimelineChart from './StationEventTimelineChart';
 import StationMonthlyFrequencyChart from './StationMonthlyFrequencyChart';
 import StationPeakDistributionChart from './StationPeakDistributionChart';

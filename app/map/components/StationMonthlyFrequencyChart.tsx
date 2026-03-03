@@ -2,7 +2,7 @@
 
 import { forwardRef, useMemo } from 'react';
 
-import type { MonthlyFrequencyPoint } from '@/app/map/types';
+import type { MonthlyFrequencyPoint } from '../types';
 
 type StationMonthlyFrequencyChartProps = {
   points: MonthlyFrequencyPoint[];

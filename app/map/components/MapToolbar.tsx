@@ -2,8 +2,7 @@
 
 import { type SyntheticEvent, useRef, useState } from 'react';
 
-import type { SearchSuggestion, SelectedSearchItem } from '@/app/map/types';
-
+import type { SearchSuggestion, SelectedSearchItem } from '../types';
 import styles from './MapToolbar.module.css';
 
 type MapToolbarProps = {
