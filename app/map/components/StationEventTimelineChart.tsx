@@ -90,7 +90,7 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
           key: `${item.id}-${idx}`,
           x: chartMargin.left + normalizedX * plotWidth,
           y: chartMargin.top + (1 - normalizedY) * plotHeight,
-          label: item.peak_time_str ?? item.peak_time,
+          label: item.peak_time,
           value: item.peak_value,
         };
       });

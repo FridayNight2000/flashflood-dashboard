@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, isNotNull, lte, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte, sql } from 'drizzle-orm';
 
 import { db } from '../db';
 import { stationRecords, stations } from '../schema';
@@ -30,6 +30,9 @@ function stationWhere(filter: StationEventFilter) {
   return and(eq(stationRecords.station_id, filter.stationId), ...dateRange(filter));
 }
 
+//SECTION basin queries
+// 查询函数,输入basinName,然后basinName 和stations.basin_name进行匹配到station_ids,
+// 再和stationRecords 中的station_id进行匹配,查询,返回处于此basin中的所有events的统计信息
 export async function queryBasinSummary(basinName: string) {
   const [row] = await db
     .select({
@@ -45,6 +48,7 @@ export async function queryBasinSummary(basinName: string) {
   return row;
 }
 
+//
 export async function queryFilteredSummary(filter: EventFilter) {
   const [row] = await db
     .select({
@@ -60,27 +64,17 @@ export async function queryFilteredSummary(filter: EventFilter) {
   return row;
 }
 
-const MAX_MATCHED_ROWS = 10000;
-
 export async function queryMatchedSeries(filter: EventFilter) {
   return db
     .select({
       id: stationRecords.id,
       peak_time: stationRecords.peak_time,
       peak_value: stationRecords.peak_value,
-      peak_time_str: stationRecords.peak_time_str,
     })
     .from(stationRecords)
     .innerJoin(stations, eq(stationRecords.station_id, stations.station_id))
-    .where(
-      and(
-        basinJoinWhere(filter),
-        isNotNull(stationRecords.peak_time),
-        isNotNull(stationRecords.peak_value),
-      ),
-    )
-    .orderBy(asc(stationRecords.peak_time))
-    .limit(MAX_MATCHED_ROWS);
+    .where(basinJoinWhere(filter))
+    .orderBy(asc(stationRecords.peak_time));
 }
 
 export async function queryMatchedEvents(filter: EventFilter) {
@@ -97,13 +91,11 @@ export async function queryMatchedEvents(filter: EventFilter) {
       end_value: stationRecords.end_value,
       rise_time: stationRecords.rise_time,
       fall_time: stationRecords.fall_time,
-      peak_time_str: stationRecords.peak_time_str,
     })
     .from(stationRecords)
     .innerJoin(stations, eq(stationRecords.station_id, stations.station_id))
     .where(basinJoinWhere(filter))
-    .orderBy(asc(stationRecords.peak_time))
-    .limit(MAX_MATCHED_ROWS);
+    .orderBy(asc(stationRecords.peak_time));
 }
 
 export async function queryStationSummary(stationId: string) {
@@ -119,6 +111,9 @@ export async function queryStationSummary(stationId: string) {
     .where(eq(stationRecords.station_id, stationId));
   return row;
 }
+//!SECTION
+
+//SECTION station queries
 
 export async function queryStationFilteredSummary(filter: StationEventFilter) {
   const [row] = await db
@@ -140,18 +135,10 @@ export async function queryStationMatchedSeries(filter: StationEventFilter) {
       id: stationRecords.id,
       peak_time: stationRecords.peak_time,
       peak_value: stationRecords.peak_value,
-      peak_time_str: stationRecords.peak_time_str,
     })
     .from(stationRecords)
-    .where(
-      and(
-        stationWhere(filter),
-        isNotNull(stationRecords.peak_time),
-        isNotNull(stationRecords.peak_value),
-      ),
-    )
-    .orderBy(asc(stationRecords.peak_time))
-    .limit(MAX_MATCHED_ROWS);
+    .where(stationWhere(filter))
+    .orderBy(asc(stationRecords.peak_time));
 }
 
 export async function queryStationRecentEvents(stationId: string, limit: number) {
@@ -166,7 +153,6 @@ export async function queryStationRecentEvents(stationId: string, limit: number)
       end_value: stationRecords.end_value,
       rise_time: stationRecords.rise_time,
       fall_time: stationRecords.fall_time,
-      peak_time_str: stationRecords.peak_time_str,
     })
     .from(stationRecords)
     .where(eq(stationRecords.station_id, stationId))
@@ -187,10 +173,8 @@ export async function queryStationMatchedEvents(filter: StationEventFilter) {
       end_value: stationRecords.end_value,
       rise_time: stationRecords.rise_time,
       fall_time: stationRecords.fall_time,
-      peak_time_str: stationRecords.peak_time_str,
     })
     .from(stationRecords)
     .where(stationWhere(filter))
-    .orderBy(asc(stationRecords.peak_time))
-    .limit(MAX_MATCHED_ROWS);
+    .orderBy(asc(stationRecords.peak_time));
 }

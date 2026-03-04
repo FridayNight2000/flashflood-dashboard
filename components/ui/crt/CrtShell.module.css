@@ -1,7 +1,7 @@
 /* ── Page background ── */
 .pageBg {
   min-height: 100vh;
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/linar.jpeg');
+  background: url('/rainfall.png');
   background-size: cover;
   display: flex;
   align-items: center;

@@ -35,14 +35,12 @@ export type StationRecentEvent = {
   end_value: number | null;
   rise_time: number | null;
   fall_time: number | null;
-  peak_time_str: string | null;
 };
 
 export type StationMatchedPoint = {
   id: number;
   peak_time: string;
   peak_value: number;
-  peak_time_str: string | null;
 };
 
 export type StationEventsApiResponse = {

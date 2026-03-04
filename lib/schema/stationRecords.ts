@@ -6,7 +6,9 @@ export const stationRecords = pgTable(
   'station_records',
   {
     id: serial('id').primaryKey(),
-    station_id: text('station_id').notNull().references(() => stations.station_id),
+    station_id: text('station_id')
+      .notNull()
+      .references(() => stations.station_id),
     start_time: text('start_time'),
     peak_time: text('peak_time'),
     end_time: text('end_time'),
@@ -15,7 +17,6 @@ export const stationRecords = pgTable(
     end_value: real('end_value'),
     rise_time: real('rise_time'),
     fall_time: real('fall_time'),
-    peak_time_str: text('peak_time_str'),
   },
   (table) => [
     index('idx_records_peak_value').on(table.peak_value),

@@ -130,7 +130,6 @@ export function useCsvExport({
               end_value: null,
               rise_time: null,
               fall_time: null,
-              peak_time_str: item.peak_time_str,
             }))
       ).map((item, index) => {
         const baseRow = {

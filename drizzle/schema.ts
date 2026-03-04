@@ -34,7 +34,6 @@ export const stationRecords = sqliteTable(
     endValue: real('end_value'),
     riseTime: real('rise_time'),
     fallTime: real('fall_time'),
-    peakTimeStr: text('peak_time_str'),
   },
   (table) => [
     index('idx_records_peak_value').on(table.peakValue),
