@@ -34,7 +34,7 @@ export default function PasswordForm() {
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="No password required — click VERIFY to enter"
+          placeholder="No password required"
           className={`${styles.homeInput} ${error ? styles.homeInputError : ''}`}
         />
         {showPassword ? (
