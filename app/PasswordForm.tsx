@@ -14,8 +14,8 @@ export default function PasswordForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple password verification
-    if (password === 'Watersource2026') {
+    // No password required — accept empty input
+    if (password === '') {
       setError(false);
       router.push('/map');
     } else {
@@ -34,7 +34,7 @@ export default function PasswordForm() {
           type={showPassword ? 'text' : 'password'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter Access Key"
+          placeholder="No password required — click VERIFY to enter"
           className={`${styles.homeInput} ${error ? styles.homeInputError : ''}`}
         />
         {showPassword ? (
