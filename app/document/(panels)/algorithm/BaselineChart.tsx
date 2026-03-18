@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   CartesianGrid,
   Line,
@@ -100,7 +100,12 @@ function YearLabels() {
 }
 
 export function BaselineChart() {
+  const [isMounted, setIsMounted] = useState(false);
   const data = useMemo(() => generateData(), []);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div className="mt-8 mb-6 flex w-full flex-col gap-6">
@@ -110,63 +115,67 @@ export function BaselineChart() {
         </h3>
         <div className="relative h-[280px] w-full rounded-xl border border-slate-200 bg-white p-4 pt-8 shadow-sm">
           <YearLabels />
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-          >
-            <LineChart
-              data={data}
-              margin={{ top: 10, right: 10, bottom: 5, left: -20 }}
+          {isMounted ? (
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#E2E8F0"
-              />
-              <XAxis
-                dataKey="day"
-                hide
-              />
-              <YAxis
-                domain={[0, 15]}
-                tick={{ fontSize: 11, fill: '#94A3B8' }}
-                axisLine={false}
-                tickLine={false}
-              />
+              <LineChart
+                data={data}
+                margin={{ top: 10, right: 10, bottom: 5, left: -20 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#E2E8F0"
+                />
+                <XAxis
+                  dataKey="day"
+                  hide
+                />
+                <YAxis
+                  domain={[0, 15]}
+                  tick={{ fontSize: 11, fill: '#94A3B8' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
 
-              <ReferenceLine
-                x={364}
-                stroke="#CBD5E1"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-              />
-              <ReferenceLine
-                x={729}
-                stroke="#CBD5E1"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-              />
+                <ReferenceLine
+                  x={364}
+                  stroke="#CBD5E1"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                />
+                <ReferenceLine
+                  x={729}
+                  stroke="#CBD5E1"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                />
 
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #E2E8F0',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                  fontSize: '12px',
-                }}
-                labelStyle={{ display: 'none' }}
-                formatter={(value: number | string | readonly (number | string)[] | undefined) => [Number(value).toFixed(2) + 'm', 'Water Level']}
-              />
-              <Line
-                type="monotone"
-                dataKey="raw"
-                stroke="#818CF8"
-                strokeWidth={1.5}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '8px',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                    fontSize: '12px',
+                  }}
+                  labelStyle={{ display: 'none' }}
+                  formatter={(value: number | string | readonly (number | string)[] | undefined) => [Number(value).toFixed(2) + 'm', 'Water Level']}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="raw"
+                  stroke="#818CF8"
+                  strokeWidth={1.5}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full w-full rounded-lg bg-slate-50" />
+          )}
         </div>
       </div>
 
@@ -181,71 +190,75 @@ export function BaselineChart() {
         </div>
         <div className="relative h-[280px] w-full rounded-xl border border-slate-200 bg-white p-4 pt-8 shadow-sm">
           <YearLabels />
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-          >
-            <LineChart
-              data={data}
-              margin={{ top: 10, right: 10, bottom: 5, left: -20 }}
+          {isMounted ? (
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#E2E8F0"
-              />
-              <XAxis
-                dataKey="day"
-                hide
-              />
-              <YAxis
-                domain={[0, 15]}
-                tick={{ fontSize: 11, fill: '#94A3B8' }}
-                axisLine={false}
-                tickLine={false}
-              />
+              <LineChart
+                data={data}
+                margin={{ top: 10, right: 10, bottom: 5, left: -20 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#E2E8F0"
+                />
+                <XAxis
+                  dataKey="day"
+                  hide
+                />
+                <YAxis
+                  domain={[0, 15]}
+                  tick={{ fontSize: 11, fill: '#94A3B8' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
 
-              <ReferenceLine
-                x={364}
-                stroke="#CBD5E1"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-              />
-              <ReferenceLine
-                x={729}
-                stroke="#CBD5E1"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-              />
+                <ReferenceLine
+                  x={364}
+                  stroke="#CBD5E1"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                />
+                <ReferenceLine
+                  x={729}
+                  stroke="#CBD5E1"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                />
 
-              <ReferenceLine
-                y={5}
-                stroke="#6366F1"
-                strokeDasharray="4 4"
-                strokeWidth={1}
-                opacity={0.5}
-              />
+                <ReferenceLine
+                  y={5}
+                  stroke="#6366F1"
+                  strokeDasharray="4 4"
+                  strokeWidth={1}
+                  opacity={0.5}
+                />
 
-              <Tooltip
-                contentStyle={{
-                  borderRadius: '8px',
-                  border: '1px solid #E2E8F0',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                  fontSize: '12px',
-                }}
-                labelStyle={{ display: 'none' }}
-                formatter={(value: number | string | readonly (number | string)[] | undefined) => [Number(value).toFixed(2) + 'm', 'Water Level']}
-              />
-              <Line
-                type="monotone"
-                dataKey="corrected"
-                stroke="#34D399"
-                strokeWidth={1.5}
-                dot={false}
-                isAnimationActive={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: '8px',
+                    border: '1px solid #E2E8F0',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                    fontSize: '12px',
+                  }}
+                  labelStyle={{ display: 'none' }}
+                  formatter={(value: number | string | readonly (number | string)[] | undefined) => [Number(value).toFixed(2) + 'm', 'Water Level']}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="corrected"
+                  stroke="#34D399"
+                  strokeWidth={1.5}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full w-full rounded-lg bg-slate-50" />
+          )}
         </div>
       </div>
     </div>
