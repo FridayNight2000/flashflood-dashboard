@@ -3,9 +3,9 @@
 import { type SyntheticEvent, useRef, useState } from 'react';
 
 import type { SearchSuggestion, SelectedSearchItem } from '../types';
-import styles from './MapToolbar.module.css';
+import styles from './MapSearchbar.module.css';
 
-type MapToolbarProps = {
+type MapSearchbarProps = {
   isLoading: boolean;
   error: string | null;
   searchText: string;
@@ -17,7 +17,7 @@ type MapToolbarProps = {
   onSuggestionSelect: (item: SearchSuggestion) => void;
 };
 
-export default function MapToolbar({
+export default function MapSearchbar({
   isLoading,
   error,
   searchText,
@@ -27,7 +27,7 @@ export default function MapToolbar({
   onSearchTextChange,
   onSubmit,
   onSuggestionSelect,
-}: MapToolbarProps) {
+}: MapSearchbarProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isInputFocused, setIsInputFocused] = useState(false);
 

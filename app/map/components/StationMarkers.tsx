@@ -19,6 +19,10 @@ type StationMarkersProps = {
   getDisplayName: (station: Station) => string;
 };
 
+// 作用：地图渲染层里的站点标注组件，负责把页面层传下来的站点状态映射成 Leaflet marker、popup 和高亮层级。
+// 输入：站点列表、marker 半径、当前激活 tab、选中/预览站点 id、流域高亮集合，以及预览/提交选择的回调函数。
+// 输出：返回一组 `Pane + CircleMarker + Popup` React 节点；用户交互后通过回调把状态变化回传给 `LeafletMap`。
+// 为什么这样写：站点视觉状态来自页面层统一管理，这个组件只做“状态到地图元素”的投影；再用 `memo` 包裹，可以减少地图上大量 marker 的重复渲染成本。
 function StationMarkers({
   stations,
   markerRadius,
@@ -49,6 +53,12 @@ function StationMarkers({
         name="station-selected"
         style={{ zIndex: 630 }}
       />
+
+      {/* 普通站点 (610)  ←  被压在最底层，半透明
+      ↓
+      预览站点 (620)  ←  hover/popup 时浮出来
+      ↓
+      选中站点 (630)  ←  始终在最顶层，带脉冲动画 */}
 
       {stations.map((station) => {
         const stationId = station.station_id;

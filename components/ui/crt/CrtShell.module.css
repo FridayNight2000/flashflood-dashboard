@@ -1,6 +1,7 @@
 /* ── Page background ── */
 .pageBg {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background: url('/rainfall.png');
   background-size: cover;
   display: flex;

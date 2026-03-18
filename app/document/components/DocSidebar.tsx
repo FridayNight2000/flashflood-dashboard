@@ -7,18 +7,27 @@ import { usePathname } from 'next/navigation';
 const navItems = [
   { label: 'Introduction', href: '/document/intro' },
   { label: 'Data Pipeline', href: '/document/datasource' },
-  { label: 'Core Extraction', href: '/document/algorithm' },
-  { label: 'Benchmarks', href: '/document/fields' },
+  { label: 'Event Extraction', href: '/document/algorithm' },
+  { label: 'Validation', href: '/document/validation' },
   { label: 'Developer Guide', href: '/document/python' },
 ];
 
-export default function DocSidebar() {
+export default function DocSidebar({
+  topOffset,
+  bottomOffset,
+}: {
+  topOffset: number;
+  bottomOffset: number;
+}) {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-48 shrink-0 flex-col overflow-y-auto bg-white">
+    <aside className="flex w-48 shrink-0 flex-col overflow-y-auto bg-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* Navigation List */}
-      <nav className="flex-1 px-6 py-13">
+      <nav
+        className="flex-1 px-6"
+        style={{ paddingTop: topOffset, paddingBottom: bottomOffset }}
+      >
         <ul className="flex flex-col items-start gap-0.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href;

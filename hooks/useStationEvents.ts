@@ -151,6 +151,7 @@ export function useStationEvents({
 
     return monthCounts;
   }, [matchedSeries]);
+
   const peakDistribution = useMemo<PeakDistributionPoint[]>(() => {
     return matchedSeries
       .filter((item) => Number.isFinite(item.peak_value))

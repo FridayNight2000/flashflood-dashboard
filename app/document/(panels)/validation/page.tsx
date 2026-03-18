@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 
 type SectionProps = {
+  step: string;
   title: string;
   accentClass: string;
+  badgeBgClass: string;
   children: ReactNode;
   last?: boolean;
 };
@@ -21,7 +23,7 @@ type ParagraphProps = {
   children: ReactNode;
 };
 
-export default function DataSourcePage() {
+export default function ValidationPage() {
   return (
     <div className="bg-white font-['DM_Sans']">
       <link
@@ -29,25 +31,27 @@ export default function DataSourcePage() {
         rel="stylesheet"
       />
 
-      <div className="max-w-275 p-2.5 pr-15 pl-5">
+      <div className="max-w-275 p-2.5">
         {/* Header */}
         <header className="mb-11">
           <div className="mb-3 font-['JetBrains_Mono'] text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
-            Flash Flood database
+            Flash Flood Prediction System
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
-            Data Pipeline
+            Validation
           </h1>
           <p className="mt-3.5 text-[15px] leading-[1.75] text-slate-400">
-            Before any event can be extracted, the underlying station data needs to be sourced,
-            screened, and cleaned — producing a reliable dataset ready for downstream processing.
+            Validation summaries and diagnostic views document how extracted events are checked and
+            interpreted before downstream analysis.
           </p>
         </header>
 
         {/* Step 01 */}
         <Section
+          step="01"
           title="Raw Data"
           accentClass="text-indigo-600"
+          badgeBgClass="bg-indigo-50"
         >
           <P>
             The source data comes from water level observation records maintained by Japan's
@@ -72,8 +76,10 @@ export default function DataSourcePage() {
 
         {/* Step 02 */}
         <Section
+          step="02"
           title="Data Cleaning"
           accentClass="text-amber-600"
+          badgeBgClass="bg-amber-50"
         >
           <P>
             Raw station records contain noise that makes them unsuitable for direct use:
@@ -100,8 +106,10 @@ export default function DataSourcePage() {
 
         {/* Step 03 */}
         <Section
+          step="03"
           title="Prepared Dataset"
           accentClass="text-emerald-600"
+          badgeBgClass="bg-emerald-50"
           last
         >
           <P>
@@ -129,25 +137,19 @@ export default function DataSourcePage() {
 
 /* ─── Sub-components ─── */
 
-function Section({ title, accentClass, children, last = false }: SectionProps) {
+function Section({ step, title, accentClass, badgeBgClass, children, last = false }: SectionProps) {
   return (
     <section className={`border-t border-slate-100 pt-8 ${last ? 'pb-0' : 'pb-8'}`}>
+      {/* Merged step + title row */}
       <div className="mb-4 flex items-center gap-3">
+        <span
+          className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-['JetBrains_Mono'] text-xs font-bold ${badgeBgClass} ${accentClass}`}
+        >
+          {step}
+        </span>
         <h2 className="m-0 text-xl font-bold tracking-[-0.015em] text-slate-900">{title}</h2>
       </div>
       {children}
-
-      {!last && (
-        <div
-          aria-hidden
-          className="mt-7 flex justify-center"
-        >
-          <div className={`flex flex-col items-center ${accentClass}`}>
-            <div className="h-8 w-px bg-current opacity-35" />
-            <div className="-mt-px h-2.5 w-2.5 rotate-45 border-r-2 border-b-2 border-current" />
-          </div>
-        </div>
-      )}
     </section>
   );
 }

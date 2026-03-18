@@ -1,70 +1,82 @@
-import React from 'react';
+import type { ReactNode } from 'react';
+
+type ParagraphProps = {
+  children: ReactNode;
+};
 
 export default function IntroPage() {
   return (
-    <div className="ml-auto mr-6 max-w-5xl space-y-6">
-      <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Introduction</h1>
+    <div className="bg-white font-['DM_Sans']">
+      <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
 
-      {/* Section 1: Background & Motivation */}
-      <section className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-800">
-          Background & Motivation
-        </h2>
-        <p className="text-lg leading-7 text-slate-600">
-          Flash Floods, as an extreme variant of flooding, are most significantly characterized by a
-          rapid rise in water level (typically peaking within 6 hours) and possessing destructive
-          power far exceeding conventional floods. Given Japan&apos;s unique topography and hydrological
-          characteristics, flash flood events are highly frequent in the region. However, although
-          existing early warning systems can handle conventional floods, specialized early warnings
-          for &quot;flash floods&quot;—a sudden disaster—are still absent in Japan. To promote future disaster
-          prevention research and prediction work, building a detailed and reliable historical flash
-          flood event database for all of Japan is an indispensable cornerstone.
-        </p>
-      </section>
-
-      {/* Section 2: Project Scope & Objectives */}
-      <section className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-800">
-          Project Positioning and Goals
-        </h2>
-        <p className="text-lg leading-7 text-slate-600">
-          This document focuses on the automated data extraction pipeline for the Japan-wide Flash
-          Flood Event Database. To overcome the bottleneck of inefficiency in manual processing
-          (e.g., via Excel) when facing massive hydrological data, this project developed a core
-          processing library based on Python. The pipeline is responsible for the entire calculation
-          process from raw data cleaning and event boundary determination to complex hydrological
-          feature extraction, aiming to produce a high-confidence structured flash flood database
-          and ultimately provide core data support for a UI project that supports database querying
-          and downloading.
-        </p>
-      </section>
-
-      {/* Section 3: Scale & Feasibility */}
-      <section className="space-y-3">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-800">
-          Research Scale and Data Feasibility
-        </h2>
-        <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-1 font-semibold text-slate-800">Data Depth and Breadth</h3>
-            <p className="text-lg leading-7 text-slate-600">
-              Japan has an extensive and well-documented network of hydrological stations. This
-              study excluded stations with severe data missingness, locking onto 1,922 target
-              stations that possessed stable and valid water level data and official comparison
-              records between 2002 and 2023.
-            </p>
+      <div className="px max-w-275 p-2.5 pr-15 pl-5">
+        <header className="mb-5">
+          <div className="mb-3 font-['JetBrains_Mono'] text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+            Flash Flood Database
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-1 font-semibold text-slate-800">Massive Sample Accumulation</h3>
-            <p className="text-lg leading-7 text-slate-600">
-              Limiting the study to a single region results in too few valid event samples. Based on
-              1,922 target stations nationwide, this pipeline successfully extracted a massive number
-              of flash flood event samples, providing an ample data reserve for various future
-              hydrological analyses and large-scale computational needs.
-            </p>
+          <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
+            Introduction
+          </h1>
+          <p className="mt-3.5 text-[15px] leading-[1.75] text-slate-400">
+            This document introduces the purpose of the database, the research gap it addresses, and
+            the analytical work it is designed to support.
+          </p>
+        </header>
+
+        <section className="border-t border-slate-100 pt-5 pb-5">
+          <div className="mb-4 flex items-center gap-3">
+            <h2 className="m-0 text-xl font-bold tracking-[-0.015em] text-slate-900">
+              What This Database Is
+            </h2>
           </div>
-        </div>
-      </section>
+          <P>
+            The Japan-wide Flash Flood Database is a structured event-level database designed to
+            record flash flood events across river stations in Japan.
+            <br />
+            Rather than storing only raw hydrological observations, it organizes flash flood events
+            into reusable records that can be searched, compared, and analyzed at national scale.
+          </P>
+        </section>
+
+        <section className="border-t border-slate-100 pt-5 pb-5">
+          <div className="mb-4 flex items-center gap-3">
+            <h2 className="m-0 text-xl font-bold tracking-[-0.015em] text-slate-900">
+              Why This Database Is Needed
+            </h2>
+          </div>
+          <P>
+            Flash flood research requires more than isolated station data or case-by-case analysis.
+            Although Japan has extensive hydrological observations, these data are not directly
+            organized into structured flash flood event records.
+            <br />
+            This makes nationwide analysis, consistent event comparison, and downstream reuse
+            difficult. This database was built to address that gap by converting distributed
+            observation data into a unified and reusable event-level foundation for flash flood
+            research.
+          </P>
+        </section>
+
+        <section className="border-t border-slate-100 pt-5 pb-0">
+          <div className="mb-4 flex items-center gap-3">
+            <h2 className="m-0 text-xl font-bold tracking-[-0.015em] text-slate-900">
+              What This Database Enables
+            </h2>
+          </div>
+          <P>
+            By organizing flash flood events into a structured nationwide database, this project
+            supports large-scale event inspection, cross-station comparison, and data retrieval. It
+            also provides a reliable foundation for downstream tasks such as validation, statistical
+            analysis, and future flood prediction research.
+          </P>
+        </section>
+      </div>
     </div>
   );
+}
+
+function P({ children }: ParagraphProps) {
+  return <p className="text-[14.5px] leading-[1.8] text-slate-500">{children}</p>;
 }

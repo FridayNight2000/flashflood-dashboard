@@ -42,7 +42,7 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
               </Link>
             </nav>
           )}
-          <div className={styles.brandTitle}>KINOUCHI LABTORAY</div>
+          <div className={styles.brandTitle}>KINOUCHI LABORATORY</div>
         </div>
 
         <div className={styles.bezel}>
