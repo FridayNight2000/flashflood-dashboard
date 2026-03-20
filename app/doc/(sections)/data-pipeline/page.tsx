@@ -1,5 +1,10 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Data Pipeline',
+};
 
 type SectionProps = {
   title: string;

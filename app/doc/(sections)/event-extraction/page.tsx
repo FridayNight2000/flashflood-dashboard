@@ -1,5 +1,10 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import type { ReactNode } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Event Extraction',
+};
 
 type ParagraphProps = {
   children: ReactNode;

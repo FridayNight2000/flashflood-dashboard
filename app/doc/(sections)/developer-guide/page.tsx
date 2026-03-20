@@ -1,4 +1,9 @@
+import type { Metadata } from 'next';
 import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Developer Guide',
+};
 
 export default function DeveloperGuidePage() {
   return (

@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import { DM_Sans, JetBrains_Mono } from 'next/font/google';
 import React from 'react';
 
 import DocumentSidebar from './components/DocumentSidebar';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Documentation | Flash-Flood Database',
+    template: '%s | Flash-Flood Database Docs',
+  },
+  description:
+    'Research documentation for the Japan flash-flood database, including pipeline, extraction logic, and validation.',
+};
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
