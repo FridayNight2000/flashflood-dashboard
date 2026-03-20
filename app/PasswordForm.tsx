@@ -17,7 +17,7 @@ export default function PasswordForm() {
     // No password required — accept empty input
     if (password === '') {
       setError(false);
-      router.push('/map');
+      router.push('/database');
     } else {
       setError(true);
       setTimeout(() => setError(false), 800);

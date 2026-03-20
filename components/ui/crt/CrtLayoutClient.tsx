@@ -11,12 +11,12 @@ type CrtLayoutClientProps = {
 /**
  * Thin client wrapper for the root layout.
  * Reads the current pathname and automatically expands the CRT shell
- * on the /map page (which needs a larger viewport).
+ * on the /database page (which needs a larger viewport).
  */
 export default function CrtLayoutClient({ children }: CrtLayoutClientProps) {
   const pathname = usePathname();
 
-  const expanded = pathname.startsWith('/map') || pathname.startsWith('/document');
+  const expanded = pathname.startsWith('/database') || pathname.startsWith('/doc');
 
   return <CrtShell expanded={expanded}>{children}</CrtShell>;
 }

@@ -10,13 +10,13 @@ import {
   useState,
 } from 'react';
 
-import { normalizeText } from '@/app/map/mapUtils';
+import { normalizeText } from '@/app/database/mapUtils';
 import type {
   ActiveTab,
   BasinTabData,
   SearchSuggestion,
   SelectedSearchItem,
-} from '@/app/map/types';
+} from '@/app/database/types';
 import type { Station } from '@/types';
 
 type BasinSearchIndexItem = {

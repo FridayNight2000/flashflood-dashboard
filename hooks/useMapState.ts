@@ -3,7 +3,7 @@
 import type { Map as LeafletMapInstance } from 'leaflet';
 import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
 
-import type { ActiveTab, BasinTabData } from '@/app/map/types';
+import type { ActiveTab, BasinTabData } from '@/app/database/types';
 import type { Station } from '@/types';
 
 type UseMapStateParams = {

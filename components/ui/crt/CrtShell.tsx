@@ -29,16 +29,22 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
           {pathname !== '/' && (
             <nav className={styles.shellNav}>
               <Link
-                href="/map"
-                className={`${styles.navBtn} ${pathname.startsWith('/map') ? styles.navBtnActive : ''}`}
+                href="/database"
+                className={`${styles.navBtn} ${pathname.startsWith('/database') ? styles.navBtnActive : ''}`}
               >
                 <span className={styles.navIndicator} /> DATABASE
               </Link>
               <Link
-                href="/document"
-                className={`${styles.navBtn} ${pathname.startsWith('/document') ? styles.navBtnActive : ''}`}
+                href="/doc"
+                className={`${styles.navBtn} ${pathname.startsWith('/doc') ? styles.navBtnActive : ''}`}
               >
                 <span className={styles.navIndicator} /> DOC
+              </Link>
+              <Link
+                href="/prep"
+                className={`${styles.navBtn} ${pathname.startsWith('/prep') ? styles.navBtnActive : ''}`}
+              >
+                <span className={styles.navIndicator} /> PREP
               </Link>
             </nav>
           )}

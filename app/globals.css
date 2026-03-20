@@ -10,6 +10,7 @@
   body {
     font-family: var(--font-geist-sans), system-ui, sans-serif;
     height: 100%;
+    overflow: hidden;
   }
 
   body {

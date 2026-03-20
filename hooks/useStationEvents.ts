@@ -8,7 +8,7 @@ import type {
   BasinTabData,
   MonthlyFrequencyPoint,
   PeakDistributionPoint,
-} from '@/app/map/types';
+} from '@/app/database/types';
 import type { Station, StationEventsApiResponse, StationMatchedPoint } from '@/types';
 
 export type ChartPresetId = 'timeline_all' | 'seasonal_frequency' | 'peak_distribution';
