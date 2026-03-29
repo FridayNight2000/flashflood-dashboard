@@ -8,7 +8,6 @@ const navItems = [
   { label: 'Data Pipeline', href: '/doc/data-pipeline' },
   { label: 'Event Extraction', href: '/doc/event-extraction' },
   { label: 'Validation', href: '/doc/validation' },
-  { label: 'Developer Guide', href: '/doc/developer-guide' },
 ];
 
 export default function DocumentSidebar({
