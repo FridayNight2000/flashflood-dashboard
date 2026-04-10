@@ -701,7 +701,10 @@ export default function StationSidePanel({
                     return (
                       <>
                         {isLoadingEvents ? (
-                          <div className="mb-[0.55rem] h-[1.2825rem]" aria-hidden="true" />
+                          <div
+                            className="mb-[0.55rem] h-[1.2825rem]"
+                            aria-hidden="true"
+                          />
                         ) : (
                           <p>
                             {basinName ? (
@@ -735,7 +738,10 @@ export default function StationSidePanel({
                   }
                 >
                   {isLoadingEvents ? (
-                    <div className="mb-[0.55rem] h-[1.2825rem]" aria-hidden="true" />
+                    <div
+                      className="mb-[0.55rem] h-[1.2825rem]"
+                      aria-hidden="true"
+                    />
                   ) : (
                     <p>{`${currentBasinCount} stations • ${totalEvents ?? '-'} events • ${coveredYearsCount ?? '-'} years`}</p>
                   )}
