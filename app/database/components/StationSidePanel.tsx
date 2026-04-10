@@ -115,7 +115,8 @@ export default function StationSidePanel({
   onCloseStationTab,
   getDisplayName,
 }: StationSidePanelProps) {
-  const [hoverPos, setHoverPos] = useState<{ x: number; y: number } | null>(null);
+  const [copyHoverPos, setCopyHoverPos] = useState<{ x: number; y: number } | null>(null);
+  const [chartHoverPos, setChartHoverPos] = useState<{ x: number; y: number } | null>(null);
 
   const {
     isOpen,
@@ -245,27 +246,27 @@ export default function StationSidePanel({
                   aria-label="Copy four metric cards"
                   onMouseMove={(event) => {
                     const bounds = event.currentTarget.getBoundingClientRect();
-                    setHoverPos({
+                    setCopyHoverPos({
                       x: event.clientX - bounds.left + 12,
                       y: event.clientY - bounds.top + 12,
                     });
                   }}
                   onMouseLeave={() => {
-                    setHoverPos(null);
+                    setCopyHoverPos(null);
                   }}
                   onClick={() => {
                     void copyMetrics();
                   }}
                 >
-                  {hoverPos && (
+                  {copyHoverPos && (
                     <span
                       className={cn(
                         'pointer-events-none absolute z-10 rounded-full border border-black/10 bg-white/65 px-2 py-[0.12rem] text-[0.62rem] font-semibold tracking-[0.08em] uppercase opacity-100 shadow-[0_2px_6px_rgba(0,0,0,0.12)] transition-opacity duration-150',
                         isMetricsCopied ? 'text-black/80' : 'text-black/70',
                       )}
                       style={{
-                        left: hoverPos.x,
-                        top: hoverPos.y - 36,
+                        left: copyHoverPos.x,
+                        top: copyHoverPos.y - 36,
                         transform: 'translateX(-50%)',
                       }}
                     >
@@ -486,19 +487,19 @@ export default function StationSidePanel({
                 const clampedX = Math.min(Math.max(nextX, HOVER_DOWNLOAD_BUTTON_MARGIN), maxX);
                 const clampedY = Math.min(Math.max(nextY, HOVER_DOWNLOAD_BUTTON_MARGIN), maxY);
 
-                setHoverPos({ x: clampedX, y: clampedY });
+                setChartHoverPos({ x: clampedX, y: clampedY });
               }}
-              onMouseLeave={() => setHoverPos(null)}
+              onMouseLeave={() => setChartHoverPos(null)}
             >
-              {hoverPos && (
+              {chartHoverPos && (
                 <button
                   type="button"
                   className={
                     'pointer-events-auto absolute z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-md backdrop-blur-sm transition-transform duration-75 active:scale-95'
                   }
                   style={{
-                    left: hoverPos.x,
-                    top: hoverPos.y,
+                    left: chartHoverPos.x,
+                    top: chartHoverPos.y,
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
