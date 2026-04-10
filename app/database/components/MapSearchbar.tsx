@@ -3,6 +3,7 @@
 import { type SyntheticEvent, useRef, useState } from 'react';
 
 import type { SearchSuggestion, SelectedSearchItem } from '../types';
+import SearchLoadingIcon from './SearchLoadingIcon';
 
 type MapSearchbarProps = {
   isLoading: boolean;
@@ -27,23 +28,6 @@ function SearchInputIcon() {
     >
       <path
         d="M6 2h8v2H6V2zM4 6V4h2v2H4zm0 8H2V6h2v8zm2 2H4v-2h2v2zm8 0v2H6v-2h8zm2-2h-2v2h2v2h2v2h2v2h2v-2h-2v-2h-2v-2h-2v-2zm0-8h2v8h-2V6zm0 0V4h-2v2h2z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
-function SearchLoadingIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-5 w-5 shrink-0 text-slate-400"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 6.5A1.5 1.5 0 0 0 13.5 5V2a1.5 1.5 0 0 0-3 0v3A1.5 1.5 0 0 0 12 6.5m-3.73-.39L6.15 4A1.53 1.53 0 0 0 4 4a1.48 1.48 0 0 0-.44 1.06A1.52 1.52 0 0 0 4 6.11l2.15 2.12a1.5 1.5 0 0 0 1.06.44a1.5 1.5 0 0 0 1.06-2.56M.5 12A1.5 1.5 0 0 0 2 13.5h3a1.5 1.5 0 0 0 0-3H2A1.5 1.5 0 0 0 .5 12M7 15.52a1.48 1.48 0 0 0-1.1.48l-2.13 2.08a1.51 1.51 0 0 0 0 2.12a1.51 1.51 0 0 0 2.13 0L8 18.08a1.5 1.5 0 0 0-1-2.56M10.5 22a1.5 1.5 0 0 0 3 0v-3a1.5 1.5 0 0 0-3 0Zm5.55-6a1.5 1.5 0 0 0 0 2.12l2.12 2.12a1.52 1.52 0 0 0 1.06.44a1.54 1.54 0 0 0 1.07-.44a1.5 1.5 0 0 0 .43-1.06a1.48 1.48 0 0 0-.44-1.07L18.17 16a1.5 1.5 0 0 0-2.12 0m7.45-4a1.5 1.5 0 0 0-1.5-1.5h-3a1.5 1.5 0 0 0-1.5 1.5a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5M19 3.41a1.52 1.52 0 0 0-1 .44L15.86 6a1.5 1.5 0 0 0 0 2.12a1.51 1.51 0 0 0 2.13 0L20.11 6A1.5 1.5 0 0 0 19 3.41"
         fill="currentColor"
       />
     </svg>

@@ -8,7 +8,6 @@ export const metadata: Metadata = {
 
 type SectionProps = {
   title: string;
-  accentClass: string;
   children: ReactNode;
   last?: boolean;
   titleHref?: string;
@@ -34,7 +33,7 @@ export default function DataPipelinePage() {
       <div className="max-w-275 p-2.5 pr-15 pl-5">
         {/* Header */}
         <header className="mb-11">
-          <div className="mb-3 font-[family:var(--font-doc-mono)] text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 text-[11px] font-[family:var(--font-doc-mono)] font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood database
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
@@ -47,10 +46,7 @@ export default function DataPipelinePage() {
         </header>
 
         {/* Step 01 */}
-        <Section
-          title="Raw Data"
-          accentClass="text-indigo-600"
-        >
+        <Section title="Raw Data">
           <P>
             The source data comes from water level observation records maintained by Japan&apos;s
             Ministry of Land, Infrastructure, Transport and Tourism (MLIT). These records cover
@@ -62,6 +58,7 @@ export default function DataPipelinePage() {
             raw station observations — making the quality and continuity of the underlying time
             series the critical starting condition for everything that follows.
           </P>
+          {/*
           <StatRow
             valueClass="text-indigo-600"
             items={[
@@ -70,12 +67,12 @@ export default function DataPipelinePage() {
               { value: '20+', label: 'Years span' },
             ]}
           />
+          */}
         </Section>
 
         {/* Step 02 */}
         <Section
           title="Data Cleaning"
-          accentClass="text-amber-600"
           titleHref="/prep"
         >
           <P>
@@ -94,7 +91,6 @@ export default function DataPipelinePage() {
         {/* Step 03 */}
         <Section
           title="Prepared Dataset"
-          accentClass="text-emerald-600"
           last
         >
           <P>
@@ -106,6 +102,7 @@ export default function DataPipelinePage() {
             This dataset forms the direct input to the extraction stage: clean, consistently
             formatted time series ready for flash flood event identification.
           </P>
+          {/*
           <StatRow
             valueClass="text-emerald-600"
             items={[
@@ -114,6 +111,7 @@ export default function DataPipelinePage() {
               { value: '1,750+', label: 'Min yearly active' },
             ]}
           />
+          */}
         </Section>
       </div>
     </div>
@@ -122,7 +120,7 @@ export default function DataPipelinePage() {
 
 /* ─── Sub-components ─── */
 
-function Section({ title, accentClass, children, last = false, titleHref }: SectionProps) {
+function Section({ title, children, last = false, titleHref }: SectionProps) {
   return (
     <section className={`border-t border-slate-100 pt-8 ${last ? 'pb-0' : 'pb-8'}`}>
       <div className="mb-4 flex items-center gap-3">
@@ -140,18 +138,6 @@ function Section({ title, accentClass, children, last = false, titleHref }: Sect
         </h2>
       </div>
       {children}
-
-      {!last && (
-        <div
-          aria-hidden
-          className="mt-7 flex justify-center"
-        >
-          <div className={`flex flex-col items-center ${accentClass}`}>
-            <div className="h-8 w-px bg-current opacity-35" />
-            <div className="-mt-px h-2.5 w-2.5 rotate-45 border-r-2 border-b-2 border-current" />
-          </div>
-        </div>
-      )}
     </section>
   );
 }
@@ -165,7 +151,7 @@ function StatRow({ valueClass, items }: StatRowProps) {
     <div className="mt-5 flex gap-7 rounded-lg border border-slate-100 bg-slate-50 px-5 py-4">
       {items.map((s) => (
         <div key={s.label}>
-          <div className={`font-[family:var(--font-doc-mono)] text-lg font-bold ${valueClass}`}>
+          <div className={`text-lg font-[family:var(--font-doc-mono)] font-bold ${valueClass}`}>
             {s.value}
           </div>
           <div className="mt-0.5 text-[10.5px] tracking-[0.05em] text-slate-400">{s.label}</div>

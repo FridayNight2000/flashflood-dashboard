@@ -12,7 +12,6 @@ type ParagraphProps = {
 
 type SectionData = {
   title: string;
-  accentClass: string;
   last?: boolean;
   content: ReactNode;
 };
@@ -21,7 +20,6 @@ export default function EventExtractionPage() {
   const sections: SectionData[] = [
     {
       title: 'Baseline Correction',
-      accentClass: 'text-indigo-600',
       content: (
         <>
           <P>
@@ -42,7 +40,6 @@ export default function EventExtractionPage() {
     },
     {
       title: 'Peak Detection',
-      accentClass: 'text-amber-600',
       content: (
         <>
           <P>
@@ -81,7 +78,6 @@ export default function EventExtractionPage() {
     },
     {
       title: 'Boundary Assignment',
-      accentClass: 'text-emerald-600',
       last: true,
       content: (
         <>
@@ -103,7 +99,8 @@ export default function EventExtractionPage() {
               className="h-auto w-full origin-center transition-transform duration-300 ease-out group-hover:scale-105"
             />
           </figure>
-          <div className="mt-5 grid grid-cols-1 gap-3 font-[family:var(--font-doc-mono)] text-[11px] leading-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid grid-cols-1 gap-3 text-[11px] leading-5 font-[family:var(--font-doc-mono)] sm:grid-cols-2 lg:grid-cols-3">
+            {/*
             <div className="rounded-lg bg-sky-50 px-3 py-2.5 text-sky-800">
               <div className="text-xs">
                 <span className="font-semibold text-sky-600">Start: </span>
@@ -122,6 +119,7 @@ export default function EventExtractionPage() {
                 water level falls back below P50
               </div>
             </div>
+            */}
           </div>
         </>
       ),
@@ -133,7 +131,7 @@ export default function EventExtractionPage() {
       <div className="max-w-275 p-2.5 pr-15 pl-5">
         {/* Header */}
         <header className="mb-11">
-          <div className="mb-3 font-[family:var(--font-doc-mono)] text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 text-[11px] font-[family:var(--font-doc-mono)] font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood Database
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
@@ -157,15 +155,6 @@ export default function EventExtractionPage() {
               </h2>
             </div>
             {section.content}
-
-            {!section.last && (
-              <div
-                aria-hidden
-                className="mt-8 flex justify-center"
-              >
-                <SectionConnector accentClass={section.accentClass} />
-              </div>
-            )}
           </section>
         ))}
       </div>
@@ -177,17 +166,4 @@ export default function EventExtractionPage() {
 
 function P({ children }: ParagraphProps) {
   return <p className="mb-2.5 text-[14.5px] leading-[1.8] text-slate-500">{children}</p>;
-}
-
-type SectionConnectorProps = {
-  accentClass: string;
-};
-
-function SectionConnector({ accentClass }: SectionConnectorProps) {
-  return (
-    <div className={`flex flex-col items-center ${accentClass}`}>
-      <div className="h-8 w-px bg-current/35" />
-      <div className="-mt-px h-2.5 w-2.5 rotate-45 border-r border-b border-current" />
-    </div>
-  );
 }

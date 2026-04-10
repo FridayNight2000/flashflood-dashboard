@@ -1,5 +1,6 @@
 'use client';
 
+import { Download } from 'lucide-react';
 import { useState } from 'react';
 
 import { useCsvExport } from '@/hooks/useCsvExport';
@@ -8,10 +9,10 @@ import { cn } from '@/lib/utils';
 import type { Station } from '@/types';
 
 import type { ActiveTab, BasinTabData } from '../types';
+import SearchLoadingIcon from './SearchLoadingIcon';
 import StationEventTimelineChart from './StationEventTimelineChart';
 import StationMonthlyFrequencyChart from './StationMonthlyFrequencyChart';
 import StationPeakDistributionChart from './StationPeakDistributionChart';
-import { Download } from 'lucide-react';
 
 type StationSidePanelProps = {
   activeTab: ActiveTab;
@@ -159,21 +160,40 @@ export default function StationSidePanel({
 
   const { chartSvgRef, downloadError, downloadChartPng, downloadEventsXlsx, isDownloadingEvents } =
     useCsvExport({
-    activeTabKey,
-    currentStation,
-    currentBasin,
-    rangeStartDate,
-    rangeEndDate,
-    matchedSeries,
-    getDisplayName,
-  });
+      activeTabKey,
+      currentStation,
+      currentBasin,
+      rangeStartDate,
+      rangeEndDate,
+      matchedSeries,
+      getDisplayName,
+    });
 
   const isChartExpanded = Boolean(selectedPresetMeta);
 
+  function renderInitialEventsLoading() {
+    return (
+      <div className="mt-[0.25rem] flex min-h-[181px] items-center justify-center">
+        <SearchLoadingIcon className="h-12 w-12 text-slate-400" />
+      </div>
+    );
+  }
+
+  function renderCenteredLoadingIcon() {
+    return (
+      <div className="mx-auto flex h-[440px] w-full max-w-[760px] items-center justify-center max-[900px]:h-[320px] min-[901px]:h-full">
+        <SearchLoadingIcon className="h-10 w-10 text-slate-400" />
+      </div>
+    );
+  }
+
   function renderEventsAnalysis() {
+    if (isLoadingEvents) {
+      return renderInitialEventsLoading();
+    }
+
     return (
       <>
-        {isLoadingEvents && <p>Loading event summary...</p>}
         {(downloadError || summaryError || rangeError) && (
           <p>
             {downloadError ??
@@ -378,11 +398,9 @@ export default function StationSidePanel({
                       void downloadEventsXlsx();
                     }}
                   >
-                    {isLoadingRangeCount || isDownloadingEvents ? (
-                      '...'
-                    ) : (
-                      (rangeMatchedEvents ?? '-')
-                    )}
+                    {isLoadingRangeCount || isDownloadingEvents
+                      ? '...'
+                      : (rangeMatchedEvents ?? '-')}
                   </button>
                 </div>
                 <button
@@ -463,7 +481,7 @@ export default function StationSidePanel({
           }
         >
           {isLoadingRangeCount ? (
-            <p>Loading chart...</p>
+            renderCenteredLoadingIcon()
           ) : chartPoints.length > 0 ? (
             <div
               className={
@@ -682,26 +700,29 @@ export default function StationSidePanel({
 
                     return (
                       <>
-                        <p>
-                          {basinName ? (
-                            <>
-                              <button
-                                type="button"
-                                className={
-                                  'font-inherit cursor-pointer border-0 bg-transparent p-0 font-normal text-[#5E5A52] hover:text-[#dc2626] focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1]'
-                                }
-                                onClick={() => onOpenBasinTab(basinName)}
-                              >
-                                {basinName}
-                              </button>{' '}
-                              basin
-                            </>
-                          ) : (
-                            '- basin'
-                          )}{' '}
-                          • {isLoadingEvents ? 'Loading...' : (totalEvents ?? '-')} events •{' '}
-                          {isLoadingEvents ? 'Loading...' : (coveredYearsCount ?? '-')} years
-                        </p>
+                        {isLoadingEvents ? (
+                          <div className="mb-[0.55rem] h-[1.2825rem]" aria-hidden="true" />
+                        ) : (
+                          <p>
+                            {basinName ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className={
+                                    'font-inherit cursor-pointer border-0 bg-transparent p-0 font-normal text-[#5E5A52] hover:text-[#dc2626] focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1]'
+                                  }
+                                  onClick={() => onOpenBasinTab(basinName)}
+                                >
+                                  {basinName}
+                                </button>{' '}
+                                basin
+                              </>
+                            ) : (
+                              '- basin'
+                            )}{' '}
+                            • {totalEvents ?? '-'} events • {coveredYearsCount ?? '-'} years
+                          </p>
+                        )}
                         {renderEventsAnalysis()}
                       </>
                     );
@@ -713,11 +734,11 @@ export default function StationSidePanel({
                     'min-w-0 min-[901px]:max-h-none min-[901px]:min-w-0 min-[901px]:overflow-visible min-[901px]:pr-[2px]'
                   }
                 >
-                  <p>
-                    {currentBasinCount} stations •{' '}
-                    {isLoadingEvents ? 'Loading...' : (totalEvents ?? '-')} events{' '}
-                    • {isLoadingEvents ? 'Loading...' : (coveredYearsCount ?? '-')} years
-                  </p>
+                  {isLoadingEvents ? (
+                    <div className="mb-[0.55rem] h-[1.2825rem]" aria-hidden="true" />
+                  ) : (
+                    <p>{`${currentBasinCount} stations • ${totalEvents ?? '-'} events • ${coveredYearsCount ?? '-'} years`}</p>
+                  )}
                   {renderEventsAnalysis()}
                 </section>
               )}
