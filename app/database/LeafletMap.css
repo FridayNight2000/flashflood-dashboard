@@ -1,5 +1,5 @@
 /* Leaflet attribution override — cannot be done with Tailwind alone */
-.map-shell :global(.leaflet-bottom.leaflet-left .leaflet-control-attribution) {
+.map-shell .leaflet-bottom.leaflet-left .leaflet-control-attribution {
   font-size: 10px;
   opacity: 0.7;
 }
