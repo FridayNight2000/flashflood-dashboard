@@ -1,0 +1,16 @@
+/* Station marker animations — applied via Leaflet pathOptions.className (SVG elements) */
+.selected-pulse {
+  animation: station-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes station-pulse {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(248, 85, 82, 0.55));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(248, 85, 82, 0.8));
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(248, 85, 82, 0.55));
+  }
+}

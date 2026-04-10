@@ -129,6 +129,19 @@ export function useStationEvents({
   const eventSummary = rangeData?.summary ?? summaryData?.summary ?? null;
   const totalEvents = summaryData?.summary.matchedEvents ?? null;
   const rangeMatchedEvents = rangeData?.summary.matchedEvents ?? totalEvents;
+  const coveredYearsCount = useMemo(() => {
+    if (!minPeakDate || !maxPeakDate) {
+      return null;
+    }
+
+    const startYear = Number.parseInt(minPeakDate.slice(0, 4), 10);
+    const endYear = Number.parseInt(maxPeakDate.slice(0, 4), 10);
+    if (!Number.isFinite(startYear) || !Number.isFinite(endYear)) {
+      return null;
+    }
+
+    return Math.max(1, endYear - startYear + 1);
+  }, [maxPeakDate, minPeakDate]);
   const matchedSeries = useMemo<StationMatchedPoint[]>(
     () => rangeData?.matchedSeries ?? [],
     [rangeData?.matchedSeries],
@@ -213,6 +226,7 @@ export function useStationEvents({
     setPeakDateRangeByTab((prev) => {
       const current = prev[activeTabKey] ?? { start: '', end: '' };
       const nextEnd = rangeEndDate && next > rangeEndDate ? next : current.end;
+
       return {
         ...prev,
         [activeTabKey]: {
@@ -230,6 +244,7 @@ export function useStationEvents({
     setPeakDateRangeByTab((prev) => {
       const current = prev[activeTabKey] ?? { start: '', end: '' };
       const nextStart = rangeStartDate && next < rangeStartDate ? next : current.start;
+
       return {
         ...prev,
         [activeTabKey]: {
@@ -292,6 +307,7 @@ export function useStationEvents({
     eventSummary,
     totalEvents,
     rangeMatchedEvents,
+    coveredYearsCount,
     matchedSeries,
     chartPoints,
     monthlyFrequency,

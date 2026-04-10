@@ -1,11 +1,11 @@
 'use client';
 
+import './StationMarkers.css';
+
 import { memo, useMemo } from 'react';
 import { CircleMarker, Pane, Popup } from 'react-leaflet';
 
 import type { Station } from '@/types';
-
-import styles from './StationMarkers.module.css';
 
 type StationMarkersProps = {
   stations: Station[];
@@ -106,7 +106,7 @@ function StationMarkers({
               opacity: 1,
               weight,
               fillOpacity,
-              className: isSelected ? styles.selectedPulse : undefined,
+              className: isSelected ? 'selected-pulse' : undefined,
             }}
             eventHandlers={{
               popupopen: () => onPreviewChange(stationId),
@@ -115,12 +115,12 @@ function StationMarkers({
           >
             <Popup>
               <div>
-                <div className={styles.popupStationName}>{getDisplayName(station)}</div>
+                <div className="mb-1.5 text-slate-900 font-bold">{getDisplayName(station)}</div>
                 <div>ID: {station.station_id}</div>
                 <div>Basin: {station.basin_name || '-'}</div>
                 <button
                   type="button"
-                  className={styles.popupViewDetailsBtn}
+                  className="mt-2 border-0 bg-transparent p-0 text-[#0f5487] font-bold underline cursor-pointer hover:text-[#0a4068] focus-visible:outline-2 focus-visible:outline-[#7fb1d1] focus-visible:outline-offset-2"
                   onClick={() => onCommitSelection(station)}
                 >
                   View Details

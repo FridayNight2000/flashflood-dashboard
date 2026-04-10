@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;700&display=swap');
+
+/* Tagline decorative lines — pseudo-elements can't be done with Tailwind alone */
+.home-tagline::before,
+.home-tagline::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+}
+
+/* Shake animation for invalid input */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.home-input-error {
+  border-color: rgba(255, 80, 80, 0.5);
+  animation: shake 0.4s;
+}

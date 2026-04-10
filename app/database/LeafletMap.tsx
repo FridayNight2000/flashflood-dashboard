@@ -1,6 +1,7 @@
 'use client';
 
 import 'leaflet/dist/leaflet.css';
+import './LeafletMap.css';
 
 import type { Map as LeafletMapInstance } from 'leaflet';
 import { latLngBounds } from 'leaflet';
@@ -16,7 +17,6 @@ import { MapInstanceWatcher, MapSizeWatcher, ZoomWatcher } from './components/Ma
 import MapSearchbar from './components/MapSearchbar';
 import StationMarkers from './components/StationMarkers';
 import StationSidePanel from './components/StationSidePanel';
-import styles from './LeafletMap.module.css';
 import { normalizeText, stationDisplayName } from './mapUtils';
 
 const center: [number, number] = [36.2048, 138.2529];
@@ -230,7 +230,7 @@ export default function LeafletMap() {
 
   // return UI
   return (
-    <div className={styles.mapShell}>
+    <div className="relative w-full h-full map-shell">
       <MapSearchbar
         isLoading={isLoading}
         error={error}
@@ -251,7 +251,7 @@ export default function LeafletMap() {
         maxBounds={japanBounds}
         maxBoundsViscosity={1}
         scrollWheelZoom
-        className={styles.leafletCanvas}
+        className="w-full h-full overflow-hidden"
         attributionControl={false}
       >
         <MapSizeWatcher />

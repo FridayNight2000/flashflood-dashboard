@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 import MapPageClient from './MapPageClient';
-import styles from './page.module.css';
+
 
 export const metadata: Metadata = {
   title: 'Database | Flash-Flood Database',
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function DatabasePage() {
   return (
-    <main className={styles.map}>
+    <main className="w-full h-full">
       <MapPageClient />
     </main>
   );

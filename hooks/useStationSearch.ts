@@ -154,6 +154,7 @@ export function useStationSearch({
         zoomToStations(matched);
         setSearchHint('');
         clearPreview();
+        setSearchText(basin);
         setSelectedSearchItem({ label: basin, type: 'Basin' });
         setBasinTab({
           basinName: basin,
@@ -171,6 +172,7 @@ export function useStationSearch({
       if (stationMatch) {
         zoomToStations([stationMatch]);
         setSearchHint('');
+        setSearchText(stationMatch.station_name || getDisplayName(stationMatch));
         setSelectedSearchItem({
           label: stationMatch.station_name || getDisplayName(stationMatch),
           type: 'Station',

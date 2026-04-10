@@ -1,0 +1,111 @@
+/* ── CRT Shell — styles that can't be expressed as Tailwind utilities ── */
+
+/* Shell housing — complex multi-layer box-shadows & inset highlights */
+.crt-shell {
+  background: linear-gradient(160deg, #2e2e2e 0%, #1c1c1c 40%, #111 100%);
+  box-shadow:
+    0 0 0 3px #3a3a3a,
+    0 0 0 6px #222,
+    0 8px 80px rgba(0, 0, 0, 0.95),
+    inset 0 2px 4px rgba(255, 255, 255, 0.07);
+}
+
+/* Nav button — 3D pressed-button effect */
+.crt-nav-btn {
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.6),
+    0 1px 1px rgba(0, 0, 0, 0.8);
+  border: 1px solid #111;
+  border-top-color: #333;
+}
+
+.crt-nav-btn:hover {
+  color: #aaa;
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+}
+
+.crt-nav-btn:active {
+  color: #888;
+  background: linear-gradient(180deg, #151515 0%, #111 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 0 rgba(0, 0, 0, 0);
+  border-top-color: #000;
+  transform: translateY(1px);
+}
+
+/* Nav indicator — LED dot */
+.crt-nav-indicator {
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.8),
+    0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.crt-nav-btn-active .crt-nav-indicator {
+  background-color: var(--phosphor, #00ff41);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    0 0 8px var(--phosphor, #00ff41);
+}
+
+/* Bezel — inset neon glow */
+.crt-bezel {
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    inset 0 3px 8px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(0, 255, 65, 0.04);
+}
+
+/* Screen — phosphor glow */
+.crt-screen {
+  box-shadow: inset 0 0 80px rgba(0, 255, 65, 0.03);
+}
+
+/* Glass highlight overlay */
+.crt-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 65% 35% at 50% 12%,
+    rgba(255, 255, 255, 0.022) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+  z-index: 201;
+  border-radius: 10px;
+}
+
+/* ── Animations — only when user allows motion ── */
+
+@keyframes powerOn {
+  0% { opacity: 0.05; }
+  8% { opacity: 0.85; }
+  14% { opacity: 0.6; }
+  20% { opacity: 1; }
+}
+
+@keyframes ledBlink {
+  0%, 88%, 100% { opacity: 1; }
+  94% { opacity: 0.2; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .crt-shell {
+    transition:
+      width 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+      padding 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .crt-screen {
+    transition: height 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: powerOn 0.5s ease-out forwards;
+  }
+
+  .crt-shell::after {
+    animation: ledBlink 4s ease-in-out infinite;
+  }
+}

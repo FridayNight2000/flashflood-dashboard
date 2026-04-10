@@ -11,7 +11,7 @@ type StationMonthlyFrequencyChartProps = {
   height?: number;
 };
 
-const chartMargin = { top: 30, right: 24, bottom: 42, left: 44 };
+const chartMargin = { top: 8, right: 24, bottom: 42, left: 44 };
 
 function safeMax(arr: number[]): number {
   let max = -Infinity;
@@ -80,15 +80,16 @@ const StationMonthlyFrequencyChart = forwardRef<SVGSVGElement, StationMonthlyFre
           height={height}
           fill="#ffffff"
         />
-        <text
+        {/* <text
           x={width / 2}
           y={16}
           textAnchor="middle"
           fontSize="12"
           fill="#0f172a"
+          className="chart-title"
         >
           {title}
-        </text>
+        </text> */}
         <rect
           x={chartMargin.left}
           y={chartMargin.top}
@@ -144,7 +145,7 @@ const StationMonthlyFrequencyChart = forwardRef<SVGSVGElement, StationMonthlyFre
               width={bar.width}
               height={bar.height}
               rx="2"
-              fill="#0f766e"
+              fill="oklch(0.5144 0.1605 267.44)"
               opacity="0.9"
             >
               <title>{`${bar.label}: ${bar.count}`}</title>

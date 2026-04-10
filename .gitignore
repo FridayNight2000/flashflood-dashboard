@@ -45,3 +45,11 @@ next-env.d.ts
 
 # Vercel AI agent skills
 skills-lock.json
+AGENTS.md
+ARCHITECTURE-REVIEW.md
+CHAIN-DEEP-DIVE-1.md
+CHAIN-DEEP-DIVE-5.md
+EXECUTION-PLAN-v2.md
+lint_output.txt
+research.md
+tsc_output.txt
