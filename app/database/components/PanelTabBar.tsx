@@ -64,7 +64,7 @@ export default function PanelTabBar({
                 <button
                   type="button"
                   className={
-                    'h-6 w-6 cursor-pointer rounded-lg border-0 bg-transparent p-0 text-[0.96rem] leading-none font-bold text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#7fb1d1]'
+                    'h-6 w-6 cursor-pointer rounded-lg border-0 bg-transparent p-0 text-[0.96rem] leading-none font-bold text-slate-700 transition-transform active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#7fb1d1]'
                   }
                   aria-label="Close basin tab"
                   onClick={onCloseBasinTab}
@@ -103,7 +103,7 @@ export default function PanelTabBar({
                 <button
                   type="button"
                   className={
-                    'h-6 w-6 cursor-pointer rounded-lg border-0 bg-transparent p-0 text-[0.96rem] leading-none font-bold text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#7fb1d1]'
+                    'h-6 w-6 cursor-pointer rounded-lg border-0 bg-transparent p-0 text-[0.96rem] leading-none font-bold text-slate-700 transition-transform active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#7fb1d1]'
                   }
                   aria-label="Close station tab"
                   onClick={onCloseStationTab}

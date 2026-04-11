@@ -1,6 +1,5 @@
 'use client';
 
-import { Download } from 'lucide-react';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 import { useState } from 'react';
 
@@ -123,24 +122,18 @@ export default function ChartSection({
             onMouseLeave={() => setChartHoverPos(null)}
           >
             {chartHoverPos && (
-              <button
-                type="button"
-                className={
-                  'pointer-events-auto absolute z-50 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-md backdrop-blur-sm transition-transform duration-75 active:scale-95'
-                }
+              <span
+                className={cn(
+                  'pointer-events-none absolute z-10 rounded-full border border-black/10 bg-white/65 px-2 py-[0.12rem] text-[0.62rem] font-semibold tracking-[0.08em] uppercase opacity-100 shadow-[0_2px_6px_rgba(0,0,0,0.12)] transition-opacity duration-150 text-black/70',
+                )}
                 style={{
                   left: chartHoverPos.x,
-                  top: chartHoverPos.y,
+                  top: chartHoverPos.y - 36,
+                  transform: 'translateX(-50%)',
                 }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  void downloadChartPng();
-                }}
-                aria-label="Download chart as PNG"
-                title="Download chart as PNG"
               >
-                <Download size={14} />
-              </button>
+                download
+              </span>
             )}
             <div
               className={

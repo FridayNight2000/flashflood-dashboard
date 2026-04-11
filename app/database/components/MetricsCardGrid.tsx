@@ -64,7 +64,7 @@ export default function MetricsCardGrid({
       >
         <button
           type="button"
-          className="relative col-span-2 grid grid-cols-2 gap-x-[0.6rem] gap-y-[0.45rem] rounded-[10px] border border-gray-300 bg-[#ee9d6e] p-[0.6rem] text-left shadow-[0_3px_8px_rgba(0,0,0,0.18)] transition-transform duration-100 hover:-translate-y-[1px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1] min-[901px]:row-span-2"
+          className="relative col-span-2 grid cursor-pointer grid-cols-2 gap-x-[0.6rem] gap-y-[0.45rem] rounded-[10px] bg-[oklch(0.9851_0_0)] p-[0.6rem] text-left shadow-[0_3px_8px_rgba(0,0,0,0.18)] transition-transform duration-100 hover:-translate-y-[1px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1] min-[901px]:row-span-2"
           aria-label="Copy four metric cards"
           onMouseMove={(event) => {
             const bounds = event.currentTarget.getBoundingClientRect();

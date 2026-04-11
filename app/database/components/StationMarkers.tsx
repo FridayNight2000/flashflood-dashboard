@@ -142,7 +142,7 @@ function StationMarkers({
         const fillColor = isSelected
           ? '#EF4444'
           : isPreview
-            ? '#F7A34B'
+            ? '#EF4444'
             : isBasinHighlighted
               ? '#4288C9'
               : '#3A94C5';
@@ -150,12 +150,12 @@ function StationMarkers({
         const strokeColor = isSelected
           ? '#B91C1C'
           : isPreview
-            ? '#C6741A'
+            ? '#B91C1C'
             : isBasinHighlighted
               ? '#2F7EA8'
               : '#6B7B85';
 
-        const fillOpacity = isSelected ? 1 : isPreview ? 0.95 : isBasinHighlighted ? 0.9 : 0.4;
+        const fillOpacity = isSelected ? 1 : isPreview ? 0.45 : isBasinHighlighted ? 0.9 : 0.4;
 
         const weight = isSelected ? 2 : isPreview ? 1.5 : isBasinHighlighted ? 1 : 0.6;
 
