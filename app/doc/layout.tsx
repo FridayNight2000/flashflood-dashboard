@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { DM_Sans, JetBrains_Mono } from 'next/font/google';
 import React from 'react';
 
 import DocumentSidebar from './components/DocumentSidebar';
@@ -13,16 +12,6 @@ export const metadata: Metadata = {
     'Research documentation for the Japan flash-flood database, including pipeline, extraction logic, and validation.',
 };
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-doc-sans',
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-doc-mono',
-});
-
 export default function DocLayout({ children }: { children: React.ReactNode }) {
   const topOffset = 24;
   const bottomOffset = 48;
@@ -30,7 +19,7 @@ export default function DocLayout({ children }: { children: React.ReactNode }) {
   return (
     // Outer container: ensures it occupies the outer viewport, uses vertical layout, sets background to white and clear font color
     <div
-      className={`${dmSans.variable} ${jetBrainsMono.variable} absolute inset-0 flex min-h-0 flex-col overflow-hidden bg-white text-slate-900`}
+      className="absolute inset-0 flex min-h-0 flex-col overflow-hidden bg-white text-slate-900"
     >
       {/* Top main content: horizontal layout */}
       <div className="flex min-h-0 flex-1 overflow-hidden">
