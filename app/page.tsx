@@ -14,8 +14,8 @@ export default function Home() {
       <div className="flex flex-col items-center gap-[50px]">
         {/* 3. LOGO */}
         <div className="text-center flex flex-col gap-2.5">
-          <div className="font-['Inter',sans-serif] text-[62px] font-bold tracking-[-3px] leading-none text-[aliceblue]">FLASH-FLOOD</div>
-          <div className="home-tagline font-['Inter',sans-serif] text-[10px] text-white/[0.28] tracking-[4px] flex items-center gap-2.5">JAPAN DATABASE · 2002 - 2023</div>
+          <div className="text-[62px] font-bold tracking-[-3px] leading-none text-[aliceblue]">FLASH-FLOOD</div>
+          <div className="home-tagline text-[10px] text-white/[0.28] tracking-[4px] flex items-center gap-2.5">JAPAN DATABASE · 2002 - 2023</div>
         </div>
         {/* 4. Password Input */}
         <PasswordForm />
