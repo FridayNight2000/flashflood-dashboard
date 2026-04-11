@@ -34,7 +34,7 @@ export default function DateRangeBar({
           <input
             id="peak-start-date"
             className={
-              'w-[5.4rem] max-w-full appearance-none rounded-lg border-0 bg-transparent px-[0.25rem] py-[0.25rem] text-[0.82rem] font-semibold text-white outline-none focus:ring-0 focus:outline-none [&::-webkit-calendar-picker-indicator]:hidden'
+              'w-[5.5rem] max-w-full appearance-none rounded-lg border-0 bg-transparent px-[0.25rem] py-[0.25rem] text-[0.82rem] font-semibold text-white outline-none focus:ring-0 focus:outline-none [&::-webkit-calendar-picker-indicator]:hidden'
             }
             type="date"
             min={minPeakDate ?? undefined}
@@ -54,7 +54,7 @@ export default function DateRangeBar({
           <input
             id="peak-end-date"
             className={
-              'w-[5.4rem] max-w-full appearance-none rounded-lg border-0 bg-transparent px-[0.25rem] py-[0.25rem] text-[0.82rem] font-semibold text-white outline-none focus:ring-0 focus:outline-none [&::-webkit-calendar-picker-indicator]:hidden'
+              'w-[5.5rem] max-w-full appearance-none rounded-lg border-0 bg-transparent px-[0.25rem] py-[0.25rem] text-[0.82rem] font-semibold text-white outline-none focus:ring-0 focus:outline-none [&::-webkit-calendar-picker-indicator]:hidden'
             }
             type="date"
             min={minPeakDate ?? undefined}

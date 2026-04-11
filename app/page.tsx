@@ -1,6 +1,7 @@
+import './page.css';
+
 import type { Metadata } from 'next';
 
-import './page.css';
 import PasswordForm from './PasswordForm';
 
 export const metadata: Metadata = {

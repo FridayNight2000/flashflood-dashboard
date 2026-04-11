@@ -226,7 +226,7 @@ const StationEventTimelineChart = forwardRef<SVGSVGElement, StationEventTimeline
             cx={point.x}
             cy={point.y}
             r={3}
-            fill="oklch(0.5144 0.1605 267.44)"
+            fill="#4288c9"
             opacity="0.9"
           >
             <title>{`${point.label} | ${point.value.toFixed(2)}`}</title>

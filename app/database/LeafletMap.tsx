@@ -132,12 +132,21 @@ export default function LeafletMap() {
   }, [zoom]);
 
   const basinHighlightedStationIds = useMemo(() => {
-    if (!basinTab || activeTab !== 'basin') {
+    if (!basinTab) {
       return [];
     }
+    
     const basinStations = basinGroups.get(basinTab.basinName) ?? [];
-    return basinStations.map((station) => station.station_id);
-  }, [activeTab, basinGroups, basinTab]);
+    const isSelectedInBasin = 
+      activeTab === 'station' && 
+      selectedStationId != null && 
+      basinStations.some((s) => s.station_id === selectedStationId);
+
+    if (activeTab === 'basin' || isSelectedInBasin) {
+      return basinStations.map((station) => station.station_id);
+    }
+    return [];
+  }, [activeTab, basinGroups, basinTab, selectedStationId]);
 
   // 作用：地图视角控制器，给搜索结果和流域选择提供统一的“飞到目标站点/站点集合”能力。
   // 输入：`targetStations: Station[]`，通常来自搜索命中结果或流域下的站点集合；同时依赖当前 `mapInstance`。

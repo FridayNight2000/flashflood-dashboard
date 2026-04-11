@@ -26,12 +26,21 @@ function formatNumber(value: number | null): string {
   return value.toFixed(2);
 }
 
-const metricCards: { key: keyof Pick<StationEventSummary, 'maxPeakValue' | 'avgPeakValue' | 'avgFallTime' | 'avgRiseTime'>; label: string }[] = [
-  { key: 'maxPeakValue', label: 'Max Peak' },
-  { key: 'avgPeakValue', label: 'Avg Peak' },
-  { key: 'avgFallTime', label: 'Avg Fall' },
-  { key: 'avgRiseTime', label: 'Avg Rise' },
+const metricCards: {
+  key: keyof Pick<
+    StationEventSummary,
+    'maxPeakValue' | 'avgPeakValue' | 'avgFallTime' | 'avgRiseTime'
+  >;
+  label: string;
+}[] = [
+  { key: 'maxPeakValue', label: 'MAX PEAK' },
+  { key: 'avgPeakValue', label: 'AVG PEAK' },
+  { key: 'avgFallTime', label: 'AVG FALL' },
+  { key: 'avgRiseTime', label: 'AVG RISE' },
 ];
+
+const glassMetricCardClassName =
+  'min-w-0 border border-black/8 shadow-[0_2px_4px_rgba(0,0,0,0.14),inset_0_-1px_0_rgba(255,255,255,0.38)] backdrop-blur-[6px]';
 
 export default function MetricsCardGrid({
   eventSummary,
@@ -89,13 +98,14 @@ export default function MetricsCardGrid({
           {metricCards.map((card) => (
             <div
               key={card.key}
-              className={
-                'flex min-h-[88px] min-w-0 flex-col items-center justify-center gap-[0.45rem] rounded-[8px] border border-black/8 bg-white/12 p-[0.6rem] shadow-[0_2px_4px_rgba(0,0,0,0.14),inset_0_-1px_0_rgba(255,255,255,0.38)]'
-              }
+              className={cn(
+                glassMetricCardClassName,
+                'flex min-h-[88px] flex-col items-center justify-center gap-[0.45rem] rounded-[8px] bg-white/12 p-[0.6rem]',
+              )}
             >
               <strong
                 className={
-                  'text-center text-[0.8rem] leading-[1.15] tracking-[0.06em] text-black/80'
+                  'text-center text-[0.6rem] leading-[1.15] font-(--font-geist-mono) tracking-[0.06em] text-black/80'
                 }
               >
                 {card.label}
@@ -111,21 +121,23 @@ export default function MetricsCardGrid({
           ))}
         </button>
         <div
-          className={
-            'relative flex min-h-[88px] min-w-0 flex-col items-center justify-center gap-[0.45rem] rounded-[10px] border border-black/8 bg-[#AFBEA5] p-[0.6rem] shadow-[0_2px_4px_rgba(0,0,0,0.14),inset_0_-1px_0_rgba(255,255,255,0.38)]'
-          }
+          className={cn(
+            glassMetricCardClassName,
+            'relative flex min-h-[88px] flex-col items-center justify-center gap-[0.45rem] overflow-hidden rounded-[10px] bg-[oklch(0.9851_0_0)] p-[0.6rem]',
+          )}
         >
           <strong
             className={
-              'text-center text-[0.8rem] leading-[1.15] tracking-[0.06em] text-black/80'
+              'relative z-10 ' +
+              'text-center text-[0.6rem] leading-[1.15] font-(--font-geist-mono) tracking-[0.06em] text-slate-600'
             }
           >
-            In Range
+            IN RANGE
           </strong>
           <button
             type="button"
             className={cn(
-              'block w-full cursor-pointer text-center text-[1.52rem] leading-none font-semibold text-black focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1]',
+              'relative z-10 block w-full cursor-pointer text-center text-[1.52rem] leading-none font-semibold text-slate-900 focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1]',
               !isLoadingRangeCount &&
                 !isDownloadingEvents &&
                 'hover:underline focus-visible:underline',
@@ -134,9 +146,7 @@ export default function MetricsCardGrid({
               void downloadEventsXlsx();
             }}
           >
-            {isLoadingRangeCount || isDownloadingEvents
-              ? '...'
-              : (rangeMatchedEvents ?? '-')}
+            {isLoadingRangeCount || isDownloadingEvents ? '...' : (rangeMatchedEvents ?? '-')}
           </button>
         </div>
         <button

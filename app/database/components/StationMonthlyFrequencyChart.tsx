@@ -145,7 +145,7 @@ const StationMonthlyFrequencyChart = forwardRef<SVGSVGElement, StationMonthlyFre
               width={bar.width}
               height={bar.height}
               rx="2"
-              fill="oklch(0.5144 0.1605 267.44)"
+              fill="#4288c9"
               opacity="0.9"
             >
               <title>{`${bar.label}: ${bar.count}`}</title>

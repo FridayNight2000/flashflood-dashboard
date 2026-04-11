@@ -154,7 +154,7 @@ export default function MapSearchbar({
             <li key={`${item.type}-${item.value}`}>
               <button
                 type="button"
-                className="flex w-full cursor-pointer items-center justify-between gap-3 border-0 bg-white px-2.5 py-1.5 text-left font-[inherit] hover:bg-slate-50"
+                className="flex w-full cursor-pointer items-center justify-between gap-3 border-0 bg-[oklch(0.9851_0_0)] px-2.5 py-1.5 text-left font-[inherit] transition-all duration-75 active:scale-[0.98] hover:bg-[oklch(0.9214_0.0248_257.65)]"
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => {
                   onSuggestionSelect(item);

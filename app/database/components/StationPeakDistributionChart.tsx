@@ -210,7 +210,7 @@ const StationPeakDistributionChart = forwardRef<SVGSVGElement, StationPeakDistri
           <path
             d={chartData.linePath}
             fill="none"
-            stroke="oklch(0.5144 0.1605 267.44)"
+            stroke="#4288c9"
             strokeWidth="1.8"
             strokeLinejoin="round"
             strokeLinecap="round"
@@ -223,7 +223,7 @@ const StationPeakDistributionChart = forwardRef<SVGSVGElement, StationPeakDistri
             cx={point.x}
             cy={point.y}
             r="2"
-            fill="oklch(0.5144 0.1605 267.44)"
+            fill="#4288c9"
           >
             <title>{`rank ${point.rank} | ${formatValue(point.peak_value)}`}</title>
           </circle>

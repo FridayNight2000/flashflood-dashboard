@@ -68,10 +68,10 @@ export default function ChartSection({
               key={preset.id}
               type="button"
               className={cn(
-                'flex items-center justify-center rounded-full border px-4 py-1 text-center text-[0.8rem] whitespace-nowrap transition-colors',
+                'flex items-center justify-center rounded-full border-0 px-4 py-1 text-center text-[0.8rem] whitespace-nowrap transition-all duration-150 active:scale-95 shadow-sm',
                 isActive
-                  ? 'pointer-events-none cursor-default border-[oklch(0.5144_0.1605_267.44)] bg-[oklch(0.5144_0.1605_267.44)] text-white'
-                  : 'cursor-pointer border-gray-300 bg-[oklch(0.9851_0_0)] text-slate-900 hover:bg-[oklch(0.9214_0.0248_257.65)]',
+                  ? 'pointer-events-none cursor-default bg-[#4288c9] text-white shadow-[#4288c9]/20'
+                  : 'cursor-pointer bg-[oklch(0.9851_0_0)] text-slate-900 hover:bg-[oklch(0.9214_0.0248_257.65)] hover:shadow-md',
               )}
               onClick={() => {
                 if (!activeTabKey) return;

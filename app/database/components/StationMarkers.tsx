@@ -3,9 +3,11 @@
 import './StationMarkers.css';
 
 import { memo, useMemo } from 'react';
-import { CircleMarker, Pane, Popup } from 'react-leaflet';
+import { CircleMarker, Pane, Polyline, Popup } from 'react-leaflet';
 
 import type { Station } from '@/types';
+
+type MapPosition = [number, number];
 
 type StationMarkersProps = {
   stations: Station[];
@@ -38,9 +40,60 @@ function StationMarkers({
     () => new Set(basinHighlightedStationIds),
     [basinHighlightedStationIds],
   );
+  const basinHighlightPolyline = useMemo(() => {
+    if (basinHighlightedSet.size === 0) {
+      return [];
+    }
+
+    const highlightedStations = stations.filter((station) => {
+      if (!basinHighlightedSet.has(station.station_id)) {
+        return false;
+      }
+
+      const { latitude, longitude } = station;
+      return (
+        typeof latitude === 'number' &&
+        !Number.isNaN(latitude) &&
+        typeof longitude === 'number' &&
+        !Number.isNaN(longitude)
+      );
+    });
+
+    if (highlightedStations.length < 2) {
+      return [];
+    }
+
+    const latitudes = highlightedStations.map((station) => station.latitude as number);
+    const longitudes = highlightedStations.map((station) => station.longitude as number);
+    const sortByLongitude =
+      Math.max(...longitudes) - Math.min(...longitudes) >=
+      Math.max(...latitudes) - Math.min(...latitudes);
+
+    return highlightedStations
+      .slice()
+      .sort((left, right) =>
+        sortByLongitude
+          ? (left.longitude as number) - (right.longitude as number)
+          : (left.latitude as number) - (right.latitude as number),
+      )
+      .reduce<MapPosition[]>((acc, station) => {
+        const position: MapPosition = [station.latitude as number, station.longitude as number];
+        const lastPosition = acc[acc.length - 1];
+
+        if (!lastPosition || lastPosition[0] !== position[0] || lastPosition[1] !== position[1]) {
+          acc.push(position);
+        }
+
+        return acc;
+      }, []);
+  }, [basinHighlightedSet, stations]);
 
   return (
     <>
+      <Pane
+        name="basin-lines"
+        style={{ zIndex: 605 }}
+      />
       <Pane
         name="station-base"
         style={{ zIndex: 610 }}
@@ -60,12 +113,25 @@ function StationMarkers({
       ↓
       选中站点 (630)  ←  始终在最顶层，带脉冲动画 */}
 
+      {basinHighlightPolyline.length > 1 && (
+        <Polyline
+          positions={basinHighlightPolyline}
+          pane="basin-lines"
+          interactive={false}
+          pathOptions={{
+            color: '#4A9ECE',
+            weight: 2,
+            opacity: 0.55,
+            dashArray: '4 6',
+          }}
+        />
+      )}
+
       {stations.map((station) => {
         const stationId = station.station_id;
         const isSelected = activeTab === 'station' && selectedStationId === stationId;
         const isPreview = !isSelected && previewStationId === stationId;
-        const isBasinHighlighted =
-          activeTab === 'basin' && !isSelected && !isPreview && basinHighlightedSet.has(stationId);
+        const isBasinHighlighted = !isSelected && !isPreview && basinHighlightedSet.has(stationId);
 
         const pane = isSelected
           ? 'station-selected'
@@ -74,22 +140,22 @@ function StationMarkers({
             : 'station-base';
 
         const fillColor = isSelected
-          ? '#F85552'
+          ? '#EF4444'
           : isPreview
             ? '#F7A34B'
             : isBasinHighlighted
-              ? '#4A9ECE'
+              ? '#4288C9'
               : '#3A94C5';
 
         const strokeColor = isSelected
-          ? '#C12624'
+          ? '#B91C1C'
           : isPreview
             ? '#C6741A'
             : isBasinHighlighted
               ? '#2F7EA8'
               : '#6B7B85';
 
-        const fillOpacity = isSelected ? 1 : isPreview ? 0.95 : isBasinHighlighted ? 0.85 : 0.4;
+        const fillOpacity = isSelected ? 1 : isPreview ? 0.95 : isBasinHighlighted ? 0.9 : 0.4;
 
         const weight = isSelected ? 2 : isPreview ? 1.5 : isBasinHighlighted ? 1 : 0.6;
 
@@ -115,12 +181,12 @@ function StationMarkers({
           >
             <Popup>
               <div>
-                <div className="mb-1.5 text-slate-900 font-bold">{getDisplayName(station)}</div>
+                <div className="mb-1.5 font-bold text-slate-900">{getDisplayName(station)}</div>
                 <div>ID: {station.station_id}</div>
                 <div>Basin: {station.basin_name || '-'}</div>
                 <button
                   type="button"
-                  className="mt-2 border-0 bg-transparent p-0 text-[#0f5487] font-bold underline cursor-pointer hover:text-[#0a4068] focus-visible:outline-2 focus-visible:outline-[#7fb1d1] focus-visible:outline-offset-2"
+                  className="mt-2 cursor-pointer border-0 bg-transparent p-0 font-bold text-[#0f5487] underline hover:text-[#0a4068] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7fb1d1]"
                   onClick={() => onCommitSelection(station)}
                 >
                   View Details

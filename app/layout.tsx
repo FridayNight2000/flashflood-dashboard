@@ -1,9 +1,10 @@
 import './globals.css';
 
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { GeistMono } from 'geist/font/mono';
 import { GeistPixelGrid } from 'geist/font/pixel';
-import { Inter, JetBrains_Mono } from 'next/font/google';
 import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import CrtLayoutClient from '@/components/ui/crt/CrtLayoutClient';
 import type { RootLayoutProps } from '@/types';
@@ -18,6 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
 });
 
+const geistMono = GeistMono;
 const geistPixelGrid = GeistPixelGrid;
 
 export const metadata: Metadata = {
@@ -29,7 +31,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${geistPixelGrid.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${geistMono.variable} ${geistPixelGrid.variable}`}
     >
       <head>
         <link

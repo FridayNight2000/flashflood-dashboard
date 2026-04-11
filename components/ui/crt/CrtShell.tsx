@@ -1,9 +1,9 @@
 'use client';
 
+import './CrtShell.css';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import './CrtShell.css';
 
 type CrtShellProps = {
   expanded?: boolean;

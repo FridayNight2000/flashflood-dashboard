@@ -13,16 +13,6 @@ type SectionProps = {
   titleHref?: string;
 };
 
-type StatItem = {
-  value: string;
-  label: string;
-};
-
-type StatRowProps = {
-  valueClass: string;
-  items: StatItem[];
-};
-
 type ParagraphProps = {
   children: ReactNode;
 };
@@ -144,19 +134,4 @@ function Section({ title, children, last = false, titleHref }: SectionProps) {
 
 function P({ children }: ParagraphProps) {
   return <p className="mb-2.5 text-[14.5px] leading-[1.8] text-slate-500">{children}</p>;
-}
-
-function StatRow({ valueClass, items }: StatRowProps) {
-  return (
-    <div className="mt-5 flex gap-7 rounded-lg border border-slate-100 bg-slate-50 px-5 py-4">
-      {items.map((s) => (
-        <div key={s.label}>
-          <div className={`text-lg font-mono font-bold ${valueClass}`}>
-            {s.value}
-          </div>
-          <div className="mt-0.5 text-[10.5px] tracking-[0.05em] text-slate-400">{s.label}</div>
-        </div>
-      ))}
-    </div>
-  );
 }

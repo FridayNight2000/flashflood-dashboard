@@ -164,7 +164,7 @@ export default function StationSidePanel({
     <aside
       className={cn(
         'absolute right-3 z-[1000] hidden overflow-hidden rounded-2xl bg-white font-sans shadow-[0_12px_24px_rgba(0,0,0,0.2)]',
-        'top-3 w-[min(360px,calc(100vw-2rem))]',
+        'top-3 w-[min(370px,calc(100vw-2rem))]',
         'max-[900px]:top-auto max-[900px]:right-3 max-[900px]:bottom-3 max-[900px]:left-3 max-[900px]:max-h-[42%] max-[900px]:w-auto',
         isOpen && 'block',
         selectedPreset && 'w-[min(980px,calc(100vw-2rem))] max-[900px]:w-auto',
@@ -204,7 +204,10 @@ export default function StationSidePanel({
                 }
               >
                 {isLoadingEvents ? (
-                  <div className="mb-[0.55rem] h-[1.2825rem]" aria-hidden="true" />
+                  <div
+                    className="mb-[0.55rem] h-[1.2825rem]"
+                    aria-hidden="true"
+                  />
                 ) : currentStation ? (
                   <p>
                     {basinName ? (
