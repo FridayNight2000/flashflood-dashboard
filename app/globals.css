@@ -34,3 +34,15 @@
 .chart-title {
   display: none;
 }
+
+.map-search-input::placeholder {
+  font-family:
+    var(--font-geist-pixel-grid), var(--font-inter), 'LINE Seed JP', system-ui, sans-serif;
+  color: rgb(51 65 85);
+  opacity: 1;
+}
+
+.map-search-hint {
+  font-family:
+    var(--font-geist-pixel-grid), var(--font-inter), 'LINE Seed JP', system-ui, sans-serif;
+}

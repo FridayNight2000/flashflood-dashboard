@@ -118,7 +118,7 @@ export default function MapSearchbar({
 
   return (
     <div
-      className="absolute top-3 left-3 z-[1000] rounded-[10px] border border-gray-200 bg-white font-[var(--font-geist-sans),system-ui,sans-serif] shadow-[0_4px_12px_rgba(15,23,42,0.08)] transition-[width] duration-150 ease-out focus-within:border-slate-300"
+      className="absolute top-3 left-3 z-1000 rounded-[10px] border border-gray-200 bg-white shadow-[0_4px_12px_rgba(15,23,42,0.08)] transition-[width] duration-150 ease-out focus-within:border-slate-300"
       style={{ width: containerWidth }}
     >
       <form onSubmit={onSubmit}>
@@ -136,7 +136,7 @@ export default function MapSearchbar({
           )}
           <input
             ref={inputRef}
-            className={inputClassName}
+            className={`${inputClassName} map-search-input`}
             type="text"
             value={displayValue}
             onChange={(event) => onSearchTextChange(event.target.value)}
@@ -168,7 +168,11 @@ export default function MapSearchbar({
           ))}
         </ul>
       )}
-      {searchHint && <p className="mx-3 mb-2.5 text-sm text-gray-600">{searchHint}</p>}
+      {searchHint && (
+        <p className="map-search-hint mx-3 mb-2.5 text-center text-sm text-gray-600">
+          {searchHint}
+        </p>
+      )}
     </div>
   );
 }
