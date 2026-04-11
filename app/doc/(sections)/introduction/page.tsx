@@ -11,10 +11,10 @@ type ParagraphProps = {
 
 export default function IntroductionPage() {
   return (
-    <div className="bg-white font-[family:var(--font-doc-sans)]">
+    <div className="bg-white font-sans">
       <div className="px max-w-275 p-2.5 pr-15 pl-5">
         <header className="mb-5">
-          <div className="mb-3 font-[family:var(--font-doc-mono)] text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 font-mono text-[11px] font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood Database
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">

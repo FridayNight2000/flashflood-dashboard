@@ -99,7 +99,7 @@ export default function EventExtractionPage() {
               className="h-auto w-full origin-center transition-transform duration-300 ease-out group-hover:scale-105"
             />
           </figure>
-          <div className="mt-5 grid grid-cols-1 gap-3 text-[11px] leading-5 font-[family:var(--font-doc-mono)] sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid grid-cols-1 gap-3 text-[11px] leading-5 font-mono sm:grid-cols-2 lg:grid-cols-3">
             {/*
             <div className="rounded-lg bg-sky-50 px-3 py-2.5 text-sky-800">
               <div className="text-xs">
@@ -127,11 +127,11 @@ export default function EventExtractionPage() {
   ];
 
   return (
-    <div className="overflow-hidden bg-white font-[family:var(--font-doc-sans)]">
+    <div className="overflow-hidden bg-white font-sans">
       <div className="max-w-275 p-2.5 pr-15 pl-5">
         {/* Header */}
         <header className="mb-11">
-          <div className="mb-3 text-[11px] font-[family:var(--font-doc-mono)] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 text-[11px] font-mono font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood Database
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">

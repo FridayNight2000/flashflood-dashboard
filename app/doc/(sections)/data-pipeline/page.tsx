@@ -29,11 +29,11 @@ type ParagraphProps = {
 
 export default function DataPipelinePage() {
   return (
-    <div className="bg-white font-[family:var(--font-doc-sans)]">
+    <div className="bg-white font-sans">
       <div className="max-w-275 p-2.5 pr-15 pl-5">
         {/* Header */}
         <header className="mb-11">
-          <div className="mb-3 text-[11px] font-[family:var(--font-doc-mono)] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 text-[11px] font-mono font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood database
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
@@ -151,7 +151,7 @@ function StatRow({ valueClass, items }: StatRowProps) {
     <div className="mt-5 flex gap-7 rounded-lg border border-slate-100 bg-slate-50 px-5 py-4">
       {items.map((s) => (
         <div key={s.label}>
-          <div className={`text-lg font-[family:var(--font-doc-mono)] font-bold ${valueClass}`}>
+          <div className={`text-lg font-mono font-bold ${valueClass}`}>
             {s.value}
           </div>
           <div className="mt-0.5 text-[10.5px] tracking-[0.05em] text-slate-400">{s.label}</div>

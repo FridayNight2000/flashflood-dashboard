@@ -18,11 +18,11 @@ type ParagraphProps = {
 
 export default function ValidationPage() {
   return (
-    <div className="bg-white font-[family:var(--font-doc-sans)]">
+    <div className="bg-white font-sans">
       <div className="max-w-275 p-2.5">
         {/* Header */}
         <header className="mb-11">
-          <div className="mb-3 text-[11px] font-[family:var(--font-doc-mono)] font-medium tracking-[0.14em] text-indigo-600 uppercase">
+          <div className="mb-3 text-[11px] font-mono font-medium tracking-[0.14em] text-indigo-600 uppercase">
             Flash Flood Prediction System
           </div>
           <h1 className="m-0 text-4xl leading-[1.1] font-bold tracking-[-0.025em] text-slate-900">
