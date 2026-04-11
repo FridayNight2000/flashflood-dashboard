@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+@theme {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 @layer base {
   * {
     margin: 0;
@@ -8,7 +13,7 @@
 
   html,
   body {
-    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-family: var(--font-sans);
     height: 100%;
     overflow: hidden;
   }
@@ -22,7 +27,7 @@
   pre,
   kbd,
   samp {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: var(--font-mono);
   }
 }
 
