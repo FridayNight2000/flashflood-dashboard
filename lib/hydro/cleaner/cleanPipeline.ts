@@ -163,9 +163,7 @@ function deduplicateRecords(records: HydroRecord[]): HydroRecord[] {
   for (const r of records) {
     map.set(r.dateTime.getTime(), r);
   }
-  return Array.from(map.values()).sort(
-    (a, b) => a.dateTime.getTime() - b.dateTime.getTime(),
-  );
+  return Array.from(map.values());
 }
 
 /** Flag character -> Japanese label */

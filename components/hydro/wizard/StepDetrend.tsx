@@ -1,9 +1,10 @@
 'use client';
 
+import { CheckCircle2, Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 import StationHeader from '@/components/hydro/ui/StationHeader';
-import { useWizardContext } from '@/lib/hydro/context';
+import { useWizardDispatch, useWizardStore } from '@/lib/hydro/context';
 import { applyDetrend, getDetrendWindowSize } from '@/lib/hydro/detrend/rollingMedian';
 import { getDataSpanMonths, suggestDetrendStrategy } from '@/lib/hydro/detrend/strategy';
 import { downloadDetrendedCsv } from '@/lib/hydro/export/csvExporter';
@@ -16,8 +17,12 @@ const STRATEGY_LABEL: Record<'skip' | 'local' | 'full', string> = {
 };
 
 export default function StepDetrend() {
-  const { state, dispatch } = useWizardContext();
-  const { stationId, selectedRange, cleanedData, detrendStrategy, detrendedData } = state;
+  const dispatch = useWizardDispatch();
+  const stationId = useWizardStore((state) => state.stationId);
+  const selectedRange = useWizardStore((state) => state.selectedRange);
+  const cleanedData = useWizardStore((state) => state.cleanedData);
+  const detrendStrategy = useWizardStore((state) => state.detrendStrategy);
+  const detrendedData = useWizardStore((state) => state.detrendedData);
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastProcessedStrategy, setLastProcessedStrategy] = useState<
     'skip' | 'local' | 'full' | null
@@ -113,27 +118,7 @@ export default function StepDetrend() {
                   : 'bg-gray-400 hover:bg-gray-500'
               }`}
             >
-              {isProcessing && (
-                <svg
-                  className="h-4 w-4 animate-spin text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-              )}
+              {isProcessing && <Loader2 className="h-4 w-4 animate-spin text-white" />}
               {isProcessing ? 'Processing...' : isStrategyChanged ? 'Run' : 'Rerun'}
             </button>
           </div>
@@ -143,17 +128,7 @@ export default function StepDetrend() {
       {detrendedData.length > 0 && (
         <div className="flex items-center gap-4 px-2 pt-4 text-sm text-gray-600">
           <span className="flex items-center gap-1.5 font-semibold text-emerald-600">
-            <svg
-              className="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <CheckCircle2 className="h-5 w-5 fill-emerald-600 text-white" />
             Done ·{' '}
             <strong className="ml-1 text-emerald-700">
               {STRATEGY_LABEL[detrendStrategy]} Detrend
@@ -194,19 +169,7 @@ export default function StepDetrend() {
             disabled={!selectedRange || detrendedData.length === 0}
             className="flex h-10 items-center justify-center gap-2 rounded-md bg-blue-600 px-5 font-medium text-white shadow-md transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
-            </svg>
+            <Download className="h-4 w-4" />
           </button>
         </div>
       </div>

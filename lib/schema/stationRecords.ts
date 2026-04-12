@@ -1,4 +1,4 @@
-import { index, pgTable, real, serial, text } from 'drizzle-orm/pg-core';
+import { index, pgTable, real, serial, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { stations } from './stations';
 
@@ -9,9 +9,9 @@ export const stationRecords = pgTable(
     station_id: text('station_id')
       .notNull()
       .references(() => stations.station_id),
-    start_time: text('start_time'),
-    peak_time: text('peak_time'),
-    end_time: text('end_time'),
+    start_time: timestamp('start_time', { mode: 'string' }),
+    peak_time: timestamp('peak_time', { mode: 'string' }),
+    end_time: timestamp('end_time', { mode: 'string' }),
     start_value: real('start_value'),
     peak_value: real('peak_value'),
     end_value: real('end_value'),

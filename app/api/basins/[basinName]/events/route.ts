@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { parseBoolean, parseDateOnly } from '../../../../../lib/apiUtils';
+import { parseBoolean, parseDateOnly, parsePositiveInt } from '../../../../../lib/apiUtils';
 import {
   queryBasinSummary,
   queryFilteredSummary,
@@ -28,7 +28,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ basinNa
 
     const startTs = peakStart ? `${peakStart} 00:00:00` : null;
     const endTs = peakEnd ? `${peakEnd} 23:59:59` : null;
-    const filter = { basinName: cleanBasin, startTs, endTs };
+    const matchedLimit = parsePositiveInt(sp.get('matchedLimit'), 2000, 5000);
+    const filter = { basinName: cleanBasin, startTs, endTs, limit: matchedLimit };
 
     const filteredSummary = await queryFilteredSummary(filter);
     const matchedEvents = filteredSummary.matchedEvents ?? 0;
@@ -61,6 +62,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ basinNa
       recentEvents: [],
       matchedSeries: matchedSeriesData,
       matchedEventsDetail: matchedEventsData,
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400' },
     });
   } catch (error) {
     console.error('[GET /api/basins/[basinName]/events]', error);

@@ -1,7 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useState } from "react";
+import { useStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 
 import type {
   CleanStats,
@@ -82,24 +84,46 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
   }
 }
 
-export const WizardContext = createContext<{
-  state: WizardState;
-  dispatch: React.Dispatch<WizardAction>;
-} | null>(null);
+type WizardStore = WizardState & {
+  dispatch: (action: WizardAction) => void;
+};
+
+function createWizardStore() {
+  return createStore<WizardStore>()((set, get) => ({
+    ...initialState,
+    dispatch: (action) => {
+      const currentState = get();
+      const nextState = wizardReducer(currentState, action);
+      set(nextState);
+    },
+  }));
+}
+
+const WizardStoreContext = createContext<ReturnType<typeof createWizardStore> | null>(null);
 
 export function WizardProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(wizardReducer, initialState);
+  const [store] = useState(createWizardStore);
+
   return (
-    <WizardContext.Provider value={{ state, dispatch }}>
+    <WizardStoreContext.Provider value={store}>
       {children}
-    </WizardContext.Provider>
+    </WizardStoreContext.Provider>
   );
 }
 
-export function useWizardContext() {
-  const context = useContext(WizardContext);
+function useWizardStoreContext() {
+  const context = useContext(WizardStoreContext);
   if (!context) {
-    throw new Error("useWizardContext must be used within a WizardProvider");
+    throw new Error("Wizard hooks must be used within a WizardProvider");
   }
   return context;
+}
+
+export function useWizardStore<T>(selector: (state: WizardState) => T): T {
+  const store = useWizardStoreContext();
+  return useStore(store, selector as (state: WizardStore) => T);
+}
+
+export function useWizardDispatch() {
+  return useWizardStoreContext().getState().dispatch;
 }

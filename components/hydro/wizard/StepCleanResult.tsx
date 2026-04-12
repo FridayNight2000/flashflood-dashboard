@@ -1,10 +1,11 @@
 'use client';
 
+import { Check, Download, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import StationHeader from '@/components/hydro/ui/StationHeader';
 import { cleanFiles } from '@/lib/hydro/cleaner/cleanPipeline';
-import { useWizardContext } from '@/lib/hydro/context';
+import { useWizardDispatch, useWizardStore } from '@/lib/hydro/context';
 import { downloadCleanedCsv } from '@/lib/hydro/export/csvExporter';
 import { formatYearMonth } from '@/lib/hydro/utils/formatDate';
 
@@ -40,8 +41,12 @@ function ProgressBar({ value }: { value: number }) {
 }
 
 export default function StepCleanResult() {
-  const { state, dispatch } = useWizardContext();
-  const { stationId, uploadedFiles, selectedRange, cleanedData, cleanStats } = state;
+  const dispatch = useWizardDispatch();
+  const stationId = useWizardStore((state) => state.stationId);
+  const uploadedFiles = useWizardStore((state) => state.uploadedFiles);
+  const selectedRange = useWizardStore((state) => state.selectedRange);
+  const cleanedData = useWizardStore((state) => state.cleanedData);
+  const cleanStats = useWizardStore((state) => state.cleanStats);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -102,25 +107,7 @@ export default function StepCleanResult() {
             {isProcessing ? (
               <>
                 <div className="flex items-center gap-2 text-sm font-medium text-blue-700">
-                  <svg
-                    className="h-4 w-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Cleaning data...
                 </div>
                 <ProgressBar value={progress} />
@@ -130,17 +117,10 @@ export default function StepCleanResult() {
               cleanStats && (
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
-                    <svg
+                    <Check
                       className="h-3.5 w-3.5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                      strokeWidth={3}
+                    />
                     Cleaning Complete
                   </span>
                 </div>
@@ -222,19 +202,7 @@ export default function StepCleanResult() {
                 disabled={cleanedData.length === 0}
                 className="flex h-10 w-12 items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
+                <Download className="h-4 w-4" />
               </button>
               {cleanedData.length > 0 && (
                 <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100">

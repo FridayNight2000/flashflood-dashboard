@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { useWizardContext } from '@/lib/hydro/context';
+import { useWizardDispatch, useWizardStore } from '@/lib/hydro/context';
 
 function toMonthValue(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -14,8 +14,8 @@ function fromMonthValue(s: string): Date {
 }
 
 export default function TimeRangePicker() {
-  const { state, dispatch } = useWizardContext();
-  const { dateRange } = state;
+  const dispatch = useWizardDispatch();
+  const dateRange = useWizardStore((state) => state.dateRange);
 
   // Derive initial values directly from dateRange (no effect needed)
   const initialStart = dateRange ? toMonthValue(dateRange.start) : '';

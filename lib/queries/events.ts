@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, lte, type SQL, sql } from 'drizzle-orm';
 
 import { db } from '../db';
 import { stationRecords, stations } from '../schema';
@@ -7,16 +7,18 @@ export interface EventFilter {
   basinName: string;
   startTs?: string | null;
   endTs?: string | null;
+  limit?: number;
 }
 
 export interface StationEventFilter {
   stationId: string;
   startTs?: string | null;
   endTs?: string | null;
+  limit?: number;
 }
 
 function dateRange(filter: { startTs?: string | null; endTs?: string | null }) {
-  const clauses = [];
+  const clauses: SQL[] = [];
   if (filter.startTs) clauses.push(gte(stationRecords.peak_time, filter.startTs));
   if (filter.endTs) clauses.push(lte(stationRecords.peak_time, filter.endTs));
   return clauses;
@@ -74,7 +76,8 @@ export async function queryMatchedSeries(filter: EventFilter) {
     .from(stationRecords)
     .innerJoin(stations, eq(stationRecords.station_id, stations.station_id))
     .where(basinJoinWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(filter.limit ?? 2000);
 }
 
 export async function queryMatchedEvents(filter: EventFilter) {
@@ -95,7 +98,8 @@ export async function queryMatchedEvents(filter: EventFilter) {
     .from(stationRecords)
     .innerJoin(stations, eq(stationRecords.station_id, stations.station_id))
     .where(basinJoinWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(filter.limit ?? 2000);
 }
 
 export async function queryStationSummary(stationId: string) {
@@ -138,7 +142,8 @@ export async function queryStationMatchedSeries(filter: StationEventFilter) {
     })
     .from(stationRecords)
     .where(stationWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(filter.limit ?? 2000);
 }
 
 export async function queryStationRecentEvents(stationId: string, limit: number) {
@@ -176,5 +181,6 @@ export async function queryStationMatchedEvents(filter: StationEventFilter) {
     })
     .from(stationRecords)
     .where(stationWhere(filter))
-    .orderBy(asc(stationRecords.peak_time));
+    .orderBy(asc(stationRecords.peak_time))
+    .limit(filter.limit ?? 2000);
 }

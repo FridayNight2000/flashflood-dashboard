@@ -2,18 +2,20 @@
 
 import React, { useCallback, useRef, useState } from 'react';
 
-import { useWizardContext } from '@/lib/hydro/context';
+import { useWizardDispatch, useWizardStore } from '@/lib/hydro/context';
 import { getDateRange, scanFiles } from '@/lib/hydro/parser/fileScanner';
 
 export default function StepUpload() {
-  const { state, dispatch } = useWizardContext();
-  const canUpload = state.stationId.trim().length > 0;
+  const dispatch = useWizardDispatch();
+  const stationId = useWizardStore((state) => state.stationId);
+  const uploadedFiles = useWizardStore((state) => state.uploadedFiles);
+  const canUpload = stationId.trim().length > 0;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   /* ─── derived file counts ─── */
-  const hasFiles = state.uploadedFiles.length > 0;
+  const hasFiles = uploadedFiles.length > 0;
 
   /* ─── file handling ─── */
   const processFiles = useCallback(
@@ -160,7 +162,7 @@ export default function StepUpload() {
         {hasFiles ? (
           <div>
             <p className="text-sm font-semibold text-emerald-700">
-              {state.uploadedFiles.length} TXT files selected
+              {uploadedFiles.length} TXT files selected
             </p>
             <p className="mt-2 text-xs text-gray-400">Click or drag to re-select</p>
           </div>
@@ -196,7 +198,7 @@ export default function StepUpload() {
           <input
             id="station-id"
             type="text"
-            value={state.stationId}
+            value={stationId}
             onChange={(e) => dispatch({ type: 'SET_STATION_ID', payload: e.target.value })}
             className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 focus:outline-none"
             placeholder="e.g. 30514200"
@@ -205,7 +207,7 @@ export default function StepUpload() {
         <button
           disabled={!canUpload || !hasFiles}
           onClick={() => {
-            const scanned = scanFiles(state.uploadedFiles);
+            const scanned = scanFiles(uploadedFiles);
             dispatch({ type: 'SET_SCANNED_FILES', payload: scanned });
             dispatch({ type: 'SET_DATE_RANGE', payload: getDateRange(scanned) });
             dispatch({ type: 'SET_STEP', payload: 2 });

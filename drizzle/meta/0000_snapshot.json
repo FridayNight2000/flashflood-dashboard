@@ -1,216 +1,125 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
-  "version": "6",
-  "dialect": "sqlite",
+  "id": "5e0585d7-b02a-4b73-a10b-a8a107d78192",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "stations": {
-      "name": "stations",
-      "columns": {
-        "station_id": {
-          "autoincrement": false,
-          "name": "station_id",
-          "type": "text",
-          "primaryKey": true,
-          "notNull": false
-        },
-        "latitude": {
-          "autoincrement": false,
-          "name": "latitude",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "longitude": {
-          "autoincrement": false,
-          "name": "longitude",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "basin_name": {
-          "autoincrement": false,
-          "name": "basin_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "river_name": {
-          "autoincrement": false,
-          "name": "river_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "station_name": {
-          "autoincrement": false,
-          "name": "station_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "station_name2": {
-          "autoincrement": false,
-          "name": "station_name2",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "station_name3": {
-          "autoincrement": false,
-          "name": "station_name3",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "autoincrement": false,
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "has_data": {
-          "default": 0,
-          "autoincrement": false,
-          "name": "has_data",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "compositePrimaryKeys": {},
-      "indexes": {
-        "idx_stations_has_data": {
-          "name": "idx_stations_has_data",
-          "columns": [
-            "has_data"
-          ],
-          "isUnique": false
-        },
-        "idx_stations_basin": {
-          "name": "idx_stations_basin",
-          "columns": [
-            "basin_name"
-          ],
-          "isUnique": false
-        },
-        "idx_stations_river": {
-          "name": "idx_stations_river",
-          "columns": [
-            "river_name"
-          ],
-          "isUnique": false
-        }
-      },
-      "foreignKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "station_records": {
+    "public.station_records": {
       "name": "station_records",
+      "schema": "",
       "columns": {
         "id": {
-          "autoincrement": true,
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": false
+          "notNull": true
         },
         "station_id": {
-          "autoincrement": false,
           "name": "station_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "start_time": {
-          "autoincrement": false,
           "name": "start_time",
-          "type": "text",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "peak_time": {
-          "autoincrement": false,
           "name": "peak_time",
-          "type": "text",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "end_time": {
-          "autoincrement": false,
           "name": "end_time",
-          "type": "text",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
         "start_value": {
-          "autoincrement": false,
           "name": "start_value",
           "type": "real",
           "primaryKey": false,
           "notNull": false
         },
         "peak_value": {
-          "autoincrement": false,
           "name": "peak_value",
           "type": "real",
           "primaryKey": false,
           "notNull": false
         },
         "end_value": {
-          "autoincrement": false,
           "name": "end_value",
           "type": "real",
           "primaryKey": false,
           "notNull": false
         },
         "rise_time": {
-          "autoincrement": false,
           "name": "rise_time",
           "type": "real",
           "primaryKey": false,
           "notNull": false
         },
         "fall_time": {
-          "autoincrement": false,
           "name": "fall_time",
           "type": "real",
           "primaryKey": false,
           "notNull": false
-        },
-        "peak_time_str": {
-          "autoincrement": false,
-          "name": "peak_time_str",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         }
       },
-      "compositePrimaryKeys": {},
       "indexes": {
         "idx_records_peak_value": {
           "name": "idx_records_peak_value",
           "columns": [
-            "peak_value"
+            {
+              "expression": "peak_value",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "idx_records_station_time": {
           "name": "idx_records_station_time",
           "columns": [
-            "station_id",
-            "peak_time"
+            {
+              "expression": "station_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "peak_time",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "idx_records_peak_time": {
           "name": "idx_records_peak_time",
           "columns": [
-            "peak_time"
+            {
+              "expression": "peak_time",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -228,15 +137,112 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stations": {
+      "name": "stations",
+      "schema": "",
+      "columns": {
+        "station_id": {
+          "name": "station_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "basin_name": {
+          "name": "basin_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "river_name": {
+          "name": "river_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name": {
+          "name": "station_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name2": {
+          "name": "station_name2",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "station_name3": {
+          "name": "station_name3",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_data": {
+          "name": "has_data",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "idx_stations_basin": {
+          "name": "idx_stations_basin",
+          "columns": [
+            {
+              "expression": "basin_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "views": {},
   "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   }
 }

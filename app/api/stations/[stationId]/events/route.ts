@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-import { parseBoolean, parseDateOnly } from '../../../../../lib/apiUtils';
+import { parseBoolean, parseDateOnly, parsePositiveInt } from '../../../../../lib/apiUtils';
 import {
   queryStationFilteredSummary,
   queryStationMatchedEvents,
@@ -12,19 +12,6 @@ import {
 
 export const runtime = 'nodejs';
 
-function parseLimit(value: string | null): number {
-  if (!value) {
-    return 20;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
-    return 20;
-  }
-
-  return Math.min(parsed, 100);
-}
-
 export async function GET(req: NextRequest, context: { params: Promise<{ stationId: string }> }) {
   try {
     const { stationId } = await context.params;
@@ -34,7 +21,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ station
       return NextResponse.json({ error: 'stationId is required.' }, { status: 400 });
     }
 
-    const limit = parseLimit(req.nextUrl.searchParams.get('limit'));
+    const limit = parsePositiveInt(req.nextUrl.searchParams.get('limit'), 20, 100);
+    const matchedLimit = parsePositiveInt(req.nextUrl.searchParams.get('matchedLimit'), 2000, 5000);
     const includeRecent = parseBoolean(req.nextUrl.searchParams.get('includeRecent'), true);
     const includeMatchedSeries = parseBoolean(
       req.nextUrl.searchParams.get('includeMatchedSeries'),
@@ -61,6 +49,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ station
       stationId: cleanStationId,
       startTs,
       endTs,
+      limit: matchedLimit,
     };
 
     const filteredSummary = await queryStationFilteredSummary(filter);
@@ -98,6 +87,8 @@ export async function GET(req: NextRequest, context: { params: Promise<{ station
       recentEvents,
       matchedSeries,
       matchedEventsDetail,
+    }, {
+      headers: { 'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400' },
     });
   } catch (error) {
     console.error('[GET /api/stations/[stationId]/events]', error);

@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import StationHeader from '@/components/hydro/ui/StationHeader';
 import TimeRangePicker from '@/components/hydro/ui/TimeRangePicker';
-import { useWizardContext } from '@/lib/hydro/context';
+import { useWizardDispatch, useWizardStore } from '@/lib/hydro/context';
 
 const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
 function formatMonthEN(d: Date) {
@@ -12,8 +12,11 @@ function formatMonthEN(d: Date) {
 }
 
 export default function StepConfirm() {
-  const { state, dispatch } = useWizardContext();
-  const { stationId, scannedFiles, selectedRange, dateRange } = state;
+  const dispatch = useWizardDispatch();
+  const stationId = useWizardStore((state) => state.stationId);
+  const scannedFiles = useWizardStore((state) => state.scannedFiles);
+  const selectedRange = useWizardStore((state) => state.selectedRange);
+  const dateRange = useWizardStore((state) => state.dateRange);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const validFiles = scannedFiles.filter((f) => f.parseError === null);
@@ -112,9 +115,8 @@ export default function StepConfirm() {
               <button
                 onClick={() => {
                   setShowConfirm(false);
-                  const { selectedRange: sr, dateRange: dr } = state;
-                  if (!sr && dr) {
-                    dispatch({ type: 'SET_SELECTED_RANGE', payload: dr });
+                  if (!selectedRange && dateRange) {
+                    dispatch({ type: 'SET_SELECTED_RANGE', payload: dateRange });
                   }
                   dispatch({ type: 'LOCK_SETTINGS' });
                   dispatch({ type: 'SET_STEP', payload: 3 });

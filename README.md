@@ -93,6 +93,14 @@ pnpm start
 pnpm lint
 ```
 
+## Database Migrations
+
+- New environments should use the Drizzle baseline in `drizzle/0000_fluffy_thunderbolts.sql`.
+- Existing populated databases should use the one-time upgrade script in
+  `drizzle/manual_station_records_timestamps.sql`.
+- The execution record for the 2026-04-12 timestamp migration is documented in
+  `docs/operations/2026-04-12-station-records-timestamp-migration.md`.
+
 ## Project Structure
 
 ```text
