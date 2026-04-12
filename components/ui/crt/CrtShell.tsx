@@ -2,6 +2,7 @@
 
 import './CrtShell.css';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -26,7 +27,14 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
   );
 
   return (
-    <div className="h-screen overflow-hidden bg-[url('/rainfall.png')] bg-cover flex items-center justify-center p-5 font-mono">
+    <div className="relative h-screen overflow-hidden flex items-center justify-center p-5 font-mono">
+      <Image
+        src="/rainfall.webp"
+        alt="Background"
+        fill
+        priority
+        className="object-cover -z-10"
+      />
       <div
         className={shellClasses}
         style={styleVars}
@@ -56,8 +64,8 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
         </div>
 
         <div className="bg-black rounded-[14px] p-[5px] crt-bezel">
-          <div className="crt-screen bg-[var(--bg-screen,#000)] rounded-[10px] overflow-hidden relative flex flex-col h-[var(--screen-height,520px)]">
-            <div className="flex-1 relative z-[1] overflow-hidden">{children}</div>
+          <div className="crt-screen bg-(--bg-screen,#000) rounded-[10px] overflow-hidden relative flex flex-col h-(--screen-height,520px)">
+            <div className="flex-1 relative z-1 overflow-hidden">{children}</div>
           </div>
         </div>
       </div>
