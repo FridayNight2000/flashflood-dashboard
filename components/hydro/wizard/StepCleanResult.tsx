@@ -121,7 +121,7 @@ export default function StepCleanResult() {
                       className="h-3.5 w-3.5"
                       strokeWidth={3}
                     />
-                    Cleaning Complete
+                    Cleaned
                   </span>
                 </div>
               )

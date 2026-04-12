@@ -19,7 +19,7 @@ import StationMarkers from './components/StationMarkers';
 import StationSidePanel from './components/StationSidePanel';
 import { normalizeText, stationDisplayName } from './mapUtils';
 
-const center: [number, number] = [36.2048, 138.2529];
+const center: [number, number] = [38.5, 138.2529];
 const japanBounds: [[number, number], [number, number]] = [
   [20.0, 122.0],
   [46.5, 154.0],
