@@ -39,7 +39,7 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
         className={shellClasses}
         style={styleVars}
       >
-        <div className="absolute top-[18px] left-9 right-9 flex items-center z-10 justify-between">
+        <div className="absolute top-[18px] left-9 right-9 flex items-center z-10 justify-center md:justify-between">
           <nav className="flex gap-5">
             <Link
               href="/database"
@@ -60,7 +60,7 @@ export default function CrtShell({ expanded, children, className, styleVars }: C
               <span className="block w-1.5 h-1.5 rounded-full crt-nav-indicator transition-all duration-300" /> PREP
             </Link>
           </nav>
-          <div className="font-mono text-[10px] text-[#444] tracking-[5px] whitespace-nowrap select-none">KINOUCHI LABORATORY</div>
+          <div className="hidden md:block font-mono text-[10px] text-[#444] tracking-[5px] whitespace-nowrap select-none">KINOUCHI LABORATORY</div>
         </div>
 
         <div className="bg-black rounded-[14px] p-[5px] crt-bezel">

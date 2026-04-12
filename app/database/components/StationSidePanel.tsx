@@ -185,7 +185,7 @@ export default function StationSidePanel({
 
           <div
             className={
-              'max-h-[calc(100%-60px)] overflow-x-hidden overflow-y-auto px-4 py-[0.85rem] [&_p]:m-0 [&_p]:mb-[0.55rem] [&_p]:text-[0.95rem] [&_p]:leading-[1.35]'
+              'overflow-x-hidden max-md:no-scrollbar max-md:overflow-y-auto md:overflow-y-hidden max-h-[calc(100%-60px)] px-4 py-[0.85rem] [&_p]:m-0 [&_p]:mb-[0.55rem] [&_p]:text-[0.95rem] [&_p]:leading-[1.35]'
             }
             role="tabpanel"
             id={activeTab === 'basin' ? 'tabpanel-basin' : 'tabpanel-station'}
