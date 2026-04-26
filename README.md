@@ -1,133 +1,76 @@
 # Flash-Flood Database Web
 
-Interactive web app for exploring Japan-wide flash flood events, documenting the extraction methodology, and preparing hydrological time-series data before event detection.
-
-Kinouchi Laboratory, 2002-2023 dataset.
-
 <p>
-  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/PostgreSQL-blue?logo=postgresql&logoColor=white" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+	<img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js" />
+	<img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React" />
+	<img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript" alt="TypeScript" />
+	<img src="https://img.shields.io/badge/PostgreSQL-blue?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+	<img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
 </p>
 
-## What It Includes
+Flash-Flood Database Web is a research-oriented web application for exploring
+flash-flood events from Japanese hydrological monitoring stations.
 
-- `/database`: interactive station and basin explorer backed by PostgreSQL
-- `/prep`: browser-based wizard for file scanning, cleaning, and detrending hydrological records
-- `/doc`: research-facing documentation for introduction, pipeline, extraction logic, and validation
-- `/`: password-gated landing page for the internal demo entry
+The project focuses on transforming station records into an event-centric
+view so users can inspect spatial patterns, compare basins, and understand the
+characteristics of peak events across time.
 
-## Core Capabilities
+## Project Purpose
 
-- Station-level and basin-level flash flood event browsing
-- Searchable database UI with charts, map interactions, and export support
-- Four-step preprocessing flow: upload, inspect, clean, detrend
-- Event extraction documentation covering baseline correction, peak detection, and boundary assignment
-- Validation notes comparing extracted events against official historical records
+This application was built to support nationwide flash-flood analysis with a
+single, unified interface.
 
-## Stack
+Instead of treating each station record as an isolated source, the system
+organizes data into reusable event-level information that can be browsed,
+filtered, and compared consistently.
 
-| Area | Technology |
-| --- | --- |
-| Framework | Next.js 16 App Router |
-| UI | React 19, Tailwind CSS 4, CSS Modules |
-| Data | PostgreSQL, Drizzle ORM, postgres |
-| Maps | Leaflet, react-leaflet |
-| Charts / Docs | Recharts, react-katex, react-syntax-highlighter |
-| Utilities | SWR, ExcelJS, lucide-react |
+## What The Project Contains
 
-## Routes
+- Interactive database map for station and basin exploration
+- Event-focused side-panel analysis with visual summaries
+- Browser-side data-preparation workflow for hydrological preprocessing
+- Research documentation pages covering methodology and validation
 
-| Route | Purpose |
-| --- | --- |
-| `/` | Landing page with password form |
-| `/database` | Main flash-flood database interface |
-| `/prep` | Hydrological data prep wizard |
-| `/doc/introduction` | Project overview and research motivation |
-| `/doc/data-pipeline` | Pipeline description |
-| `/doc/event-extraction` | Extraction logic and thresholds |
-| `/doc/validation` | Validation method and results |
-| `/doc/developer-guide` | Developer notes, currently in progress |
+## Core User Experience
 
-## Getting Started
+Users explore flood behavior through a map-first workflow:
 
-### Prerequisites
+- Search by basin or station
+- Open basin-level or station-level event analysis
+- Filter by peak-date range
+- View event timeline and seasonal/peak-pattern charts
+- Export analysis results for external use
 
-- Node.js 18+
-- pnpm
-- PostgreSQL with the flash-flood dataset loaded
+## System Overview
 
-### Install
+The web app is part of a broader data pipeline:
 
-```bash
-git clone https://github.com/FridayNight2000/FlashFlood-database-demo.git
-cd FlashFlood-database-demo/web
-pnpm install
-```
+1. Source event files are prepared from research datasets.
+2. Structured station/event data is stored in PostgreSQL.
+3. Next.js API routes provide query access to stations and events.
+4. The React client renders map interactions, panel analytics, and charts.
 
-### Environment
+## Application Areas
 
-Create `.env.local`:
+The application is organized into three major areas:
 
-```env
-DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>
-```
+- Database: map-based event exploration and analytics
+- Prep: step-by-step preprocessing workflow
+- Doc: project documentation and research narrative
 
-`DATABASE_URL` is required at runtime for the database pages and API routes.
+## Data Scope
 
-### Development
+The project operates on station metadata and station event records, including
+location, basin membership, event timing, and event magnitude indicators
+(peak/rise/fall related values).
 
-```bash
-pnpm dev
-```
+## Current Status
 
-App runs at `http://localhost:3000`.
+- The web application is active and structured for interactive exploration.
+- The developer-guide documentation section is still in progress.
+- No automated test suite is currently configured in this repository.
 
-### Other Commands
+## Context
 
-```bash
-pnpm build
-pnpm start
-pnpm lint
-```
-
-## Database Migrations
-
-- New environments should use the Drizzle baseline in `drizzle/0000_fluffy_thunderbolts.sql`.
-- Existing populated databases should use the one-time upgrade script in
-  `drizzle/manual_station_records_timestamps.sql`.
-- The execution record for the 2026-04-12 timestamp migration is documented in
-  `docs/operations/2026-04-12-station-records-timestamp-migration.md`.
-
-## Project Structure
-
-```text
-app/
-├── page.tsx                     # Landing page
-├── database/                    # Database map and explorer UI
-├── prep/                        # Hydrological preprocessing workflow
-├── doc/                         # Documentation pages
-└── api/                         # Stations and basin endpoints
-
-components/
-├── hydro/                       # Prep wizard UI
-└── ui/crt/                      # CRT shell and layout components
-
-lib/
-├── hydro/                       # Parsing, cleaning, detrending, export
-├── queries/                     # Database query layer
-├── schema/                      # Drizzle schema
-└── db.ts                        # PostgreSQL connection
-```
-
-## Notes
-
-- The README reflects the current route layout in this `web` app.
-- The developer guide page exists but is not finished yet.
-- Leaflet UI is isolated to client-side code where needed.
-
-## License
-
-Developed for the Kinouchi Laboratory research project.
+This project is developed for the Kinouchi Laboratory research effort on
+flash-flood analysis in Japan.
